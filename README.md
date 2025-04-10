@@ -3,7 +3,10 @@
 This is a proof of concept (POC) of a setup a new platform.
 
 `Káajal` is a Maya word which means start/begin/kick off.
-
+<!--
+[![PyPI - Version](https://img.shields.io/pypi/v/kaajal.svg)](https://pypi.org/project/kaajal)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/kaajal.svg)](https://pypi.org/project/kaajal)
+-->
 -----
 
 ## Table of Contents
