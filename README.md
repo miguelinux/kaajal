@@ -1,6 +1,8 @@
 # Setup a new platform
 
-This is a proof of concept (POC) of a setup a new platform
+This is a proof of concept (POC) of a setup a new platform.
+
+`Káajal` is a Maya word which means start/begin/kick off.
 
 -----
 
