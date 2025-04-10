@@ -5,6 +5,10 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+"""
+The main entry point python module
+"""
+
 import sys
 
 if __name__ == "__main__":

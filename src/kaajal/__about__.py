@@ -5,4 +5,6 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+""" Project version """
+
 __version__ = "0.0.1"
