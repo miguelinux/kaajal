@@ -8,12 +8,14 @@
 """Main persea module file"""
 
 import click
-
 from kaajal.__about__ import __version__
 
 
-@click.group(context_settings={"help_option_names": ["-h", "--help"]}, invoke_without_command=True)
+@click.group(
+    context_settings={"help_option_names": ["-h", "--help"]},
+    invoke_without_command=True,
+)
 @click.version_option(version=__version__, prog_name="kaajal")
 def kaajal():
-    """ Main entry of the program """
+    """Main entry of the program"""
     click.echo("Hello world!")
