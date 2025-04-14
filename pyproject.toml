@@ -38,6 +38,9 @@ Source = "https://github.com/miguelinux/kaajal"
 [project.scripts]
 kaajal = "kaajal.cli:kaajal"
 
+[project.gui-scripts]
+kaajalw = "kaajal.gui:kaajalw"
+
 [tool.hatch.version]
 path = "src/kaajal/__about__.py"
 
