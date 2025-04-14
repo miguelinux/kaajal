@@ -12,6 +12,7 @@ from platform import system
 
 import click
 from kaajal.__about__ import __version__
+from kaajal.gui.mainwindow import MainWindow
 
 logger = logging.getLogger(__name__)
 
@@ -37,5 +38,12 @@ def kaajal(gui):
 
     if gui:
         click.echo("gui")
+        try:
+            root = MainWindow()
+            root.mainloop()
+        # TODO: Test this on a no GUI environment
+        except Exception:
+            logger.exception("Internal launch or mainloop error")
+
     else:
         click.echo("NO gui")
