@@ -7,6 +7,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Main persea module file"""
 
+from platform import system
+
 import click
 from kaajal.__about__ import __version__
 
@@ -18,4 +20,11 @@ from kaajal.__about__ import __version__
 @click.version_option(version=__version__, prog_name="kaajal")
 def kaajal():
     """Main entry of the program"""
-    click.echo("Hello world!")
+    my_system_os = system()
+
+    if my_system_os == "Linux":
+        click.echo("Linux")
+    elif my_system_os == "Darwin":
+        click.echo("Darwin")
+    elif my_system_os == "Windows":
+        click.echo("Windows")
