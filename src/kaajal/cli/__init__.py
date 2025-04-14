@@ -7,10 +7,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Main persea module file"""
 
+import logging
 from platform import system
 
 import click
 from kaajal.__about__ import __version__
+
+logger = logging.getLogger(__name__)
 
 
 @click.group(
