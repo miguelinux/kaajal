@@ -18,7 +18,8 @@ from kaajal.__about__ import __version__
     invoke_without_command=True,
 )
 @click.version_option(version=__version__, prog_name="kaajal")
-def kaajal():
+@click.option("--gui/--no-gui", default=True)
+def kaajal(gui):
     """Main entry of the program"""
     my_system_os = system()
 
@@ -28,3 +29,8 @@ def kaajal():
         click.echo("Darwin")
     elif my_system_os == "Windows":
         click.echo("Windows")
+
+    if gui:
+        click.echo("gui")
+    else:
+        click.echo("NO gui")
