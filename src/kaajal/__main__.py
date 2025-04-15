@@ -14,4 +14,4 @@ import sys
 if __name__ == "__main__":
     from kaajal.cli import kaajal
 
-    sys.exit(kaajal())
+    sys.exit(kaajal(True))

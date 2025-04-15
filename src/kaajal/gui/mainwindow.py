@@ -5,6 +5,7 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+"""Main window GUI"""
 
 import logging
 import tkinter as tk

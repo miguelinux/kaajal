@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def kaajalw() -> int:
+    """Main function to use the GUI"""
     try:
         root = MainWindow()
         root.mainloop()
