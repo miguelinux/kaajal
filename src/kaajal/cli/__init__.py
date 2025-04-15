@@ -8,6 +8,7 @@
 """Main kaajal module file"""
 
 import logging
+import os
 from platform import system
 
 import click
@@ -29,15 +30,12 @@ def kaajal(gui):
     """Main entry of the program"""
     my_system_os = system()
 
+    display = "Allow GUI"
+    # On Linux DISPLAY environment variable is used only with GUI
     if my_system_os == "Linux":
-        click.echo("Linux")
-    elif my_system_os == "Darwin":
-        click.echo("Darwin")
-    elif my_system_os == "Windows":
-        click.echo("Windows")
+        display = os.environ.get("DISPLAY", None)
 
-    if gui:
-        click.echo("gui")
+    if gui and display:
         kaajalw()
     else:
         click.echo("NO gui")
