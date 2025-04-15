@@ -9,6 +9,7 @@
 
 import logging
 import os
+from typing import Literal
 
 from kaajal.__about__ import __appauthor__
 from kaajal.__about__ import __appname__
@@ -16,9 +17,9 @@ from platformdirs import user_config_dir
 
 logger = logging.getLogger(__name__)
 
-config = {
+config: dict[str, str | int | bool | Literal["%", "{", "$"]] = {
     "user": "",
-    "passwd": "",
+    "password": "",
     "host": "",
     "ssh_key": "",
     "ssh_config": "",
@@ -27,6 +28,10 @@ config = {
     "gui": False,
     "os": "",
     "log_level": logging.WARNING,
+    "log_file": "",
+    "log_format": "{asctime:s} {levelname:<8s}:{name:<15s}: {message:s}",
+    "log_style": "{",
+    "log_datefmt": "%Y-%m-%d %H:%M:%S",
 }
 
 
