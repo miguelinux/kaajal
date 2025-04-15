@@ -13,6 +13,7 @@ from platform import system
 
 import click
 from kaajal import my_setup
+from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
 from kaajal.gui import kaajalw
 
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
     context_settings={"help_option_names": ["-h", "--help"]},
     invoke_without_command=True,
 )
-@click.version_option(version=__version__, prog_name="kaajal")
+@click.version_option(version=__version__, prog_name=__appname__)
 @click.option(
     "--gui/--no-gui", default=True, help="Use GUI version, enabled by default."
 )
