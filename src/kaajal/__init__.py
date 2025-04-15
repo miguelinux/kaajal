@@ -9,11 +9,9 @@
 
 import logging
 
-from kaajal import config
-
 logger = logging.getLogger(__name__)
 
 
 def my_setup():
     """Ensure everething is setup well"""
-    config.get_config()
+    pass

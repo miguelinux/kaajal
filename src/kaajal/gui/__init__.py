@@ -9,16 +9,18 @@
 
 import logging
 
-from kaajal import my_setup
+from kaajal import config
 from kaajal.gui.mainwindow import MainWindow
 
 logger = logging.getLogger(__name__)
 
 
-def kaajalw() -> int:
+def kaajalw(standalone: bool = True) -> int:
     """Main function to use the GUI"""
 
-    my_setup()
+    if standalone:
+        config.load()
+        config.setup_log()
 
     try:
         root = MainWindow()

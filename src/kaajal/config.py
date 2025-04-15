@@ -64,7 +64,40 @@ def read_config_from(path: str) -> None:
         logger.warning(f"{path}: not found")
 
 
-def get_config() -> None:
+def read_config_env() -> None:
+    """Read configuration from environment variables"""
+
+    global config
+
+    user = os.environ.get("KAAJAL_USER")
+    password = os.environ.get("KAAJAL_PASSWORD")
+    host = os.environ.get("KAAJAL_HOST")
+    ssh_key = os.environ.get("KAAJAL_SSH_KEY")
+    ssh_config = os.environ.get("KAAJAL_SSH_CONFIG")
+    ssh_config_host = os.environ.get("KAAJAL_SSH_CONFIG_HOST")
+
+    if user:
+        config["user"] = user
+    if password:
+        config["password"] = password
+    if host:
+        config["host"] = host
+    if ssh_key:
+        config["ssh_key"] = ssh_key
+    if ssh_config:
+        config["ssh_config"] = ssh_config
+    if ssh_config_host:
+        config["ssh_config_host"] = ssh_config_host
+
+
+def load(
+    user: str | None = None,
+    password: str | None = None,
+    host: str | None = None,
+    ssh_key: str | None = None,
+    ssh_config: str | None = None,
+    ssh_config_host: str | None = None,
+) -> None:
     """
     Get configuration finding/reading it, in the next order
     1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
@@ -72,13 +105,68 @@ def get_config() -> None:
     3. command line
     """
 
-    ucd = user_config_dir(
-        appname=__appname__, appauthor=__appauthor__, ensure_exists=True
-    )
+    ucd = user_config_dir(appname=__appname__, appauthor=__appauthor__)
 
-    if not os.path.exists(ucd):
-        logger.warning("Can not create config directory: " + ucd)
+    # 1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
+    if os.path.exists(ucd):
+        config_file = os.path.join(ucd, "kaaja.conf")
+        if os.path.exists(config_file):
+            read_config_from(config_file)
 
-    config_file = os.path.join(ucd, "kaaja.conf")
+        # logger.warning("Can not create config directory: " + ucd)
+        # appname=__appname__, appauthor=__appauthor__, ensure_exists=True
 
-    read_config_from(config_file)
+    # 2. virtual environemnt KAAJAL_XXXX
+    read_config_env()
+
+    # 3. command line
+    if user:
+        config["user"] = user
+    if password:
+        config["password"] = password
+    if host:
+        config["host"] = host
+    if ssh_key:
+        config["ssh_key"] = ssh_key
+    if ssh_config:
+        config["ssh_config"] = ssh_config
+    if ssh_config_host:
+        config["ssh_config_host"] = ssh_config_host
+
+
+def setup_log(log_level: str | None = None, log_file: str | None = None) -> None:
+    """Setup the way we log the application"""
+
+    global config
+
+    if log_level:
+        log_level = log_level.lower()
+        if log_level == "notset":
+            config["log_level"] = logging.NOTSET
+        elif log_level == "debug":
+            config["log_level"] = logging.DEBUG
+        elif log_level == "info":
+            config["log_level"] = logging.INFO
+        elif log_level == "warning":
+            config["log_level"] = logging.WARNING
+        elif log_level == "error":
+            config["log_level"] = logging.ERROR
+        elif log_level == "critical":
+            config["log_level"] = logging.CRITICAL
+
+    if log_file:
+        config["log_file"] = log_file
+        logging.basicConfig(
+            filename=log_file,
+            level=config["log_level"],
+            format=str(config["log_format"]),
+            style=config["log_style"],  # type: ignore[arg-type]
+            datefmt=str(config["log_datefmt"]),
+        )
+    else:
+        logging.basicConfig(
+            level=config["log_level"],
+            format=str(config["log_format"]),
+            style=config["log_style"],  # type: ignore[arg-type]
+            datefmt=str(config["log_datefmt"]),
+        )

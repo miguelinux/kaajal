@@ -12,10 +12,10 @@ import os
 from platform import system
 
 import click
+from kaajal import config
 from kaajal import my_setup
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
-from kaajal.config import config
 from kaajal.gui import kaajalw
 
 logger = logging.getLogger(__name__)
@@ -44,41 +44,14 @@ logger = logging.getLogger(__name__)
 def kaajal(
     gui, user, password, host, ssh_key, ssh_config, ssh_config_host, log_level, log_file
 ) -> int:
-    """Main entry of the program"""
+    """Kaajal: setup a remote platform"""
+
+    config.load(user, password, host, ssh_key, ssh_config, ssh_config_host)
+
+    config.setup_log(log_level, log_file)
+
     my_system_os = system()
-    config["os"] = my_system_os
-
-    if log_level:
-        log_level = log_level.lower()
-        if log_level == "notset":
-            config["log_level"] = logging.NOTSET
-        elif log_level == "debug":
-            config["log_level"] = logging.DEBUG
-        elif log_level == "info":
-            config["log_level"] = logging.INFO
-        elif log_level == "warning":
-            config["log_level"] = logging.WARNING
-        elif log_level == "error":
-            config["log_level"] = logging.ERROR
-        elif log_level == "critical":
-            config["log_level"] = logging.CRITICAL
-
-    if log_file:
-        config["log_file"] = log_file
-        logging.basicConfig(
-            filename=log_file,
-            level=config["log_level"],
-            format=str(config["log_format"]),
-            style=config["log_style"],  # type: ignore[arg-type]
-            datefmt=str(config["log_datefmt"]),
-        )
-    else:
-        logging.basicConfig(
-            level=config["log_level"],
-            format=str(config["log_format"]),
-            style=config["log_style"],  # type: ignore[arg-type]
-            datefmt=str(config["log_datefmt"]),
-        )
+    config.config["os"] = my_system_os
 
     display = "Allow GUI"
     # On Linux DISPLAY environment variable is used only with GUI
@@ -86,8 +59,8 @@ def kaajal(
         display = os.environ.get("DISPLAY", "")
 
     if gui and display:
-        config["gui"] = True
-        kaajalw()
+        config.config["gui"] = True
+        kaajalw(False)
     else:
         my_setup()
 
