@@ -5,3 +5,9 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+"""Kaajal common functions"""
+
+
+def my_setup():
+    """Ensure everething is setup well"""
+    print("hola")

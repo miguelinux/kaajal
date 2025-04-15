@@ -9,6 +9,7 @@
 
 import logging
 
+from kaajal import my_setup
 from kaajal.gui.mainwindow import MainWindow
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 def kaajalw() -> int:
     """Main function to use the GUI"""
+
+    my_setup()
+
     try:
         root = MainWindow()
         root.mainloop()

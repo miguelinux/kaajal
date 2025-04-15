@@ -12,6 +12,7 @@ import os
 from platform import system
 
 import click
+from kaajal import my_setup
 from kaajal.__about__ import __version__
 from kaajal.gui import kaajalw
 
@@ -38,6 +39,6 @@ def kaajal(gui) -> int:
     if gui and display:
         kaajalw()
     else:
-        click.echo("NO gui")
+        my_setup()
 
     return 0
