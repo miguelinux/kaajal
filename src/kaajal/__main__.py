@@ -14,4 +14,5 @@ import sys
 if __name__ == "__main__":
     from kaajal.cli import kaajal
 
-    sys.exit(kaajal(True))
+    # Let click library to handle parameters
+    sys.exit(kaajal())  # pylint: disable=no-value-for-parameter
