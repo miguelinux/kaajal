@@ -14,10 +14,12 @@ from kaajal.gui.mainwindow import MainWindow
 logger = logging.getLogger(__name__)
 
 
-def kaajalw():
+def kaajalw() -> int:
     try:
         root = MainWindow()
         root.mainloop()
     # TODO: Test this on a no GUI environment
     except Exception:
         logger.exception("Internal launch or mainloop error")
+
+    return 0

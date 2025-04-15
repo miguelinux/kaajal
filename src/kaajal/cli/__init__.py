@@ -26,16 +26,18 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--gui/--no-gui", default=True, help="Use GUI version, enabled by default."
 )
-def kaajal(gui):
+def kaajal(gui) -> int:
     """Main entry of the program"""
     my_system_os = system()
 
     display = "Allow GUI"
     # On Linux DISPLAY environment variable is used only with GUI
     if my_system_os == "Linux":
-        display = os.environ.get("DISPLAY", None)
+        display = os.environ.get("DISPLAY", "")
 
     if gui and display:
         kaajalw()
     else:
         click.echo("NO gui")
+
+    return 0
