@@ -7,7 +7,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Kaajal common functions"""
 
+from kaajal import config
+
 
 def my_setup():
     """Ensure everething is setup well"""
     print("hola")
+    config.read_config()
