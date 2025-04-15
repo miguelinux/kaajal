@@ -15,6 +15,7 @@ import click
 from kaajal import my_setup
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
+from kaajal.config import config
 from kaajal.gui import kaajalw
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 def kaajal(gui) -> int:
     """Main entry of the program"""
     my_system_os = system()
+    config["os"] = my_system_os
 
     display = "Allow GUI"
     # On Linux DISPLAY environment variable is used only with GUI
@@ -38,6 +40,7 @@ def kaajal(gui) -> int:
         display = os.environ.get("DISPLAY", "")
 
     if gui and display:
+        config["gui"] = True
         kaajalw()
     else:
         my_setup()
