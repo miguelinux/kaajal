@@ -44,17 +44,9 @@ logger = logging.getLogger(__name__)
 def kaajal(**kwargs) -> int:
     """Kaajal: setup a remote platform"""
 
-    log_level = kwargs["log_level"]
-    log_file = kwargs["log_file"]
-    gui = kwargs["gui"]
-    kwargs.pop("log_level")
-    kwargs.pop("log_file")
-    kwargs.pop("gui")
+    config.load(**kwargs)
 
-    # pylint: disable-next=too-many-function-args
-    config.load(kwargs)  # type: ignore[call-arg]
-
-    config.setup_log(log_level, log_file)
+    config.setup_log(kwargs["log_level"], kwargs["log_file"])
 
     my_system_os = system()
     config.config["os"] = my_system_os
@@ -64,7 +56,7 @@ def kaajal(**kwargs) -> int:
     if my_system_os == "Linux":
         display = os.environ.get("DISPLAY", "")
 
-    if gui and display:
+    if kwargs["gui"] and display:
         config.config["gui"] = True
         kaajalw(False)
     else:
