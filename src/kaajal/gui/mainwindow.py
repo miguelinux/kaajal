@@ -140,25 +140,25 @@ class MainWindow(tk.Tk):
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
 
-        w: Any = None
+        widget: Any = None
 
-        for w in self.conn_user:
-            w.config(state="disabled")
-        for w in self.conn_ssh_key:
-            w.config(state="disabled")
-        for w in self.conn_ssh_host:
-            w.config(state="disabled")
+        for widget in self.conn_user:
+            widget.config(state="disabled")
+        for widget in self.conn_ssh_key:
+            widget.config(state="disabled")
+        for widget in self.conn_ssh_host:
+            widget.config(state="disabled")
 
         if conn_type == "ssh_key":
             self.connection_type.set("SSH key")
-            for w in self.conn_ssh_key:
-                w.config(state="normal")
+            for widget in self.conn_ssh_key:
+                widget.config(state="normal")
         elif conn_type == "ssh_host":
             self.connection_type.set("SSH host")
-            for w in self.conn_ssh_host:
-                w.config(state="normal")
+            for widget in self.conn_ssh_host:
+                widget.config(state="normal")
         else:
             # If none of above then use user
             self.connection_type.set("User")
-            for w in self.conn_user:
-                w.config(state="normal")
+            for widget in self.conn_user:
+                widget.config(state="normal")
