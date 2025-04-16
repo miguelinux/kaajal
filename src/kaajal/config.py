@@ -157,3 +157,18 @@ def setup_log(log_level: str | None = None, log_file: str | None = None) -> None
             style=config["log_style"],  # type: ignore[arg-type]
             datefmt=str(config["log_datefmt"]),
         )
+
+
+def get_conn_type() -> str:
+    """Get the connection type based on current config"""
+
+    ret = ""
+    if config["user"] and config["host"]:
+        if config["password"]:
+            ret = "user"
+        elif config["ssh_key"]:
+            ret = "ssh_key"
+    elif config["ssh_config"] and config["ssh_config_host"]:
+        ret = "ssh_host"
+
+    return ret
