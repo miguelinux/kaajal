@@ -41,59 +41,59 @@ class MainWindow(tk.Tk):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
+        self.connection_type = tk.StringVar()
+        lbl_conn = ttk.Label(mainframe, textvariable=self.connection_type)
+        lbl_conn.configure(foreground="blue")
+        lbl_conn.grid(column=2, row=1, sticky=tk.W)
+        self.connection_type.set("Unknown")
+
         self.user = tk.StringVar()
         txt_user = ttk.Entry(mainframe, width=15, textvariable=self.user)
-        txt_user.grid(column=2, row=1, sticky="we")
+        txt_user.grid(column=2, row=2, sticky="we")
 
         self.password = tk.StringVar()
         txt_password = ttk.Entry(mainframe, width=15, textvariable=self.password)
-        txt_password.grid(column=2, row=2, sticky="we")
+        txt_password.grid(column=2, row=3, sticky="we")
 
         self.host = tk.StringVar()
         txt_host = ttk.Entry(mainframe, width=15, textvariable=self.host)
-        txt_host.grid(column=2, row=3, sticky="we")
+        txt_host.grid(column=2, row=4, sticky="we")
 
         self.ssh_key = tk.StringVar()
         txt_ssh_key = ttk.Entry(mainframe, width=15, textvariable=self.ssh_key)
-        txt_ssh_key.grid(column=2, row=4, sticky="we")
+        txt_ssh_key.grid(column=2, row=5, sticky="we")
 
         self.ssh_config = tk.StringVar()
         txt_ssh_config = ttk.Entry(mainframe, width=15, textvariable=self.ssh_config)
-        txt_ssh_config.grid(column=2, row=5, sticky="we")
+        txt_ssh_config.grid(column=2, row=6, sticky="we")
 
         self.ssh_config_host = tk.StringVar()
         txt_ssh_config_host = ttk.Entry(
             mainframe, width=15, textvariable=self.ssh_config_host
         )
-        txt_ssh_config_host.grid(column=2, row=6, sticky="we")
+        txt_ssh_config_host.grid(column=2, row=7, sticky="we")
 
-        self.connection_type = tk.StringVar()
-        ttk.Label(mainframe, textvariable=self.connection_type).grid(
-            column=2, row=7, sticky=tk.W
-        )
-        self.connection_type.set("Unknown")
-
-        ttk.Label(mainframe, text="User:").grid(column=1, row=1, sticky=tk.W)
-        ttk.Label(mainframe, text="Password:").grid(column=1, row=2, sticky=tk.W)
-        ttk.Label(mainframe, text="Host:").grid(column=1, row=3, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH key:").grid(column=1, row=4, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH config:").grid(column=1, row=5, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=6, sticky=tk.W)
-        ttk.Label(mainframe, text="Conection type:").grid(column=1, row=7, sticky=tk.E)
+        ttk.Label(mainframe, text="Conection type:").grid(column=1, row=1, sticky=tk.E)
+        ttk.Label(mainframe, text="User:").grid(column=1, row=2, sticky=tk.W)
+        ttk.Label(mainframe, text="Password:").grid(column=1, row=3, sticky=tk.W)
+        ttk.Label(mainframe, text="Host:").grid(column=1, row=4, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH key:").grid(column=1, row=5, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH config:").grid(column=1, row=6, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=7, sticky=tk.W)
 
         btn_ssh_key = ttk.Button(
             mainframe,
             text="Search SSH Key",
             command=lambda: self._open_file(self.ssh_key),
         )
-        btn_ssh_key.grid(column=3, row=4, sticky=tk.W)
+        btn_ssh_key.grid(column=3, row=4, sticky="we")
 
         btn_ssh_config = ttk.Button(
             mainframe,
             text="Search SSH config",
             command=lambda: self._open_file(self.ssh_config),
         )
-        btn_ssh_config.grid(column=3, row=5, sticky=tk.W)
+        btn_ssh_config.grid(column=3, row=5, sticky="we")
 
         ttk.Button(mainframe, text="Connect").grid(column=1, row=9, sticky=tk.W)
 
