@@ -11,9 +11,9 @@ import logging
 import os
 from typing import Literal
 
+import platformdirs
 from kaajal.__about__ import __appauthor__
 from kaajal.__about__ import __appname__
-from platformdirs import user_config_dir
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +38,6 @@ config: dict[str, str | int | bool | Literal["%", "{", "$"]] = {
 def read_config_from(path: str) -> None:
     """Read configuration from a file located in path variable"""
 
-    global config
-
     # the items are: variable and value (i.e. variable = value)
     two_items = 2
     values = {}
@@ -61,13 +59,11 @@ def read_config_from(path: str) -> None:
                 config[val] = values[val]
 
     else:
-        logger.warning(f"{path}: not found")
+        logger.warning("%s: not found", path)
 
 
 def read_config_env() -> None:
     """Read configuration from environment variables"""
-
-    global config
 
     user = os.environ.get("KAAJAL_USER")
     password = os.environ.get("KAAJAL_PASSWORD")
@@ -90,14 +86,7 @@ def read_config_env() -> None:
         config["ssh_config_host"] = ssh_config_host
 
 
-def load(
-    user: str | None = None,
-    password: str | None = None,
-    host: str | None = None,
-    ssh_key: str | None = None,
-    ssh_config: str | None = None,
-    ssh_config_host: str | None = None,
-) -> None:
+def load(**kwargs) -> None:
     """
     Get configuration finding/reading it, in the next order
     1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
@@ -105,7 +94,7 @@ def load(
     3. command line
     """
 
-    ucd = user_config_dir(appname=__appname__, appauthor=__appauthor__)
+    ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
 
     # 1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
     if os.path.exists(ucd):
@@ -120,24 +109,22 @@ def load(
     read_config_env()
 
     # 3. command line
-    if user:
-        config["user"] = user
-    if password:
-        config["password"] = password
-    if host:
-        config["host"] = host
-    if ssh_key:
-        config["ssh_key"] = ssh_key
-    if ssh_config:
-        config["ssh_config"] = ssh_config
-    if ssh_config_host:
-        config["ssh_config_host"] = ssh_config_host
+    if kwargs["user"]:
+        config["user"] = kwargs["user"]
+    if kwargs["password"]:
+        config["password"] = kwargs["password"]
+    if kwargs["host"]:
+        config["host"] = kwargs["host"]
+    if kwargs["ssh_key"]:
+        config["ssh_key"] = kwargs["ssh_key"]
+    if kwargs["ssh_config"]:
+        config["ssh_config"] = kwargs["ssh_config"]
+    if kwargs["ssh_config_host"]:
+        config["ssh_config_host"] = kwargs["ssh_config_host"]
 
 
 def setup_log(log_level: str | None = None, log_file: str | None = None) -> None:
     """Setup the way we log the application"""
-
-    global config
 
     if log_level:
         log_level = log_level.lower()

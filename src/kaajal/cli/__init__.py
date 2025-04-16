@@ -41,12 +41,18 @@ logger = logging.getLogger(__name__)
     help="Log level (notset, debug, info, warning, error, critical)",
 )
 @click.option("--log-file", help="Filename to save logs")
-def kaajal(
-    gui, user, password, host, ssh_key, ssh_config, ssh_config_host, log_level, log_file
-) -> int:
+def kaajal(**kwargs) -> int:
     """Kaajal: setup a remote platform"""
 
-    config.load(user, password, host, ssh_key, ssh_config, ssh_config_host)
+    log_level = kwargs["log_level"]
+    log_file = kwargs["log_file"]
+    gui = kwargs["gui"]
+    kwargs.pop("log_level")
+    kwargs.pop("log_file")
+    kwargs.pop("gui")
+
+    # pylint: disable-next=too-many-function-args
+    config.load(kwargs)  # type: ignore[call-arg]
 
     config.setup_log(log_level, log_file)
 
