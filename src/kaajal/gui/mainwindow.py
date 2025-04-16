@@ -9,6 +9,7 @@
 
 import logging
 import tkinter as tk
+from tkinter import ttk
 
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
@@ -26,11 +27,74 @@ class MainWindow(tk.Tk):
         tk.Tk.__init__(self, className="Kaajal")
 
         self.title(__appname__ + " " + __version__)
-        self.geometry("640x480")
-        self.minsize(400, 200)
-        self.maxsize(800, 600)
+        # self.geometry("640x480")
+        # self.minsize(400, 200)
+        # self.maxsize(800, 600)
 
         self._create_menus()
+
+        mainframe = ttk.Frame(self, padding="3 3 12 12")
+        mainframe.grid(column=0, row=0, sticky="nwes")
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        self.user = tk.StringVar()
+        txt_user = ttk.Entry(mainframe, width=15, textvariable=self.user)
+        txt_user.grid(column=2, row=1, sticky="we")
+
+        self.password = tk.StringVar()
+        txt_password = ttk.Entry(mainframe, width=15, textvariable=self.password)
+        txt_password.grid(column=2, row=2, sticky="we")
+
+        self.host = tk.StringVar()
+        txt_host = ttk.Entry(mainframe, width=15, textvariable=self.host)
+        txt_host.grid(column=2, row=3, sticky="we")
+
+        self.ssh_key = tk.StringVar()
+        txt_ssh_key = ttk.Entry(mainframe, width=15, textvariable=self.ssh_key)
+        txt_ssh_key.grid(column=2, row=4, sticky="we")
+
+        self.ssh_config = tk.StringVar()
+        txt_ssh_config = ttk.Entry(mainframe, width=15, textvariable=self.ssh_config)
+        txt_ssh_config.grid(column=2, row=5, sticky="we")
+
+        self.ssh_config_host = tk.StringVar()
+        txt_ssh_config_host = ttk.Entry(
+            mainframe, width=15, textvariable=self.ssh_config_host
+        )
+        txt_ssh_config_host.grid(column=2, row=6, sticky="we")
+
+        self.connection_type = tk.StringVar()
+        ttk.Label(mainframe, textvariable=self.connection_type).grid(
+            column=2, row=7, sticky=tk.E
+        )
+
+        ttk.Label(mainframe, text="User:").grid(column=1, row=1, sticky=tk.W)
+        ttk.Label(mainframe, text="Password:").grid(column=1, row=2, sticky=tk.W)
+        ttk.Label(mainframe, text="Host:").grid(column=1, row=3, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH key:").grid(column=1, row=4, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH config:").grid(column=1, row=5, sticky=tk.W)
+        ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=6, sticky=tk.W)
+        ttk.Label(mainframe, text="Conection type:").grid(column=1, row=7, sticky=tk.E)
+
+        self.conn_user = (
+            txt_user,
+            txt_password,
+            txt_host,
+        )
+        self.conn_ssh_key = (
+            txt_user,
+            txt_host,
+            txt_ssh_key,
+        )
+        self.conn_ssh_host = (
+            txt_ssh_config,
+            txt_ssh_config_host,
+        )
+
+        for child in mainframe.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
     def _create_menus(self) -> None:
         """Create menus for the window"""

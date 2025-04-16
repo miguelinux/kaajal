@@ -24,7 +24,7 @@ config: dict[str, str | int | bool | Literal["%", "{", "$"]] = {
     "ssh_key": "",
     "ssh_config": "",
     "ssh_config_host": "",
-    "method": "",
+    "conection_type": "",  # user, ssh_key, ssh_host
     "gui": False,
     "os": "",
     "log_level": logging.WARNING,
