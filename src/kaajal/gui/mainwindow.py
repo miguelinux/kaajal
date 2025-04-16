@@ -10,7 +10,7 @@
 import logging
 import tkinter as tk
 from tkinter import ttk
-from typing import Any
+from tkinter.ttk import Widget
 
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
@@ -140,7 +140,7 @@ class MainWindow(tk.Tk):
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
 
-        widget: Any = None
+        widget: Widget | None = None
 
         for widget in self.conn_user:
             widget.config(state="disabled")
