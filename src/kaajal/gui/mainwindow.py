@@ -9,6 +9,7 @@
 
 import logging
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 from tkinter.ttk import Widget
 
@@ -80,10 +81,18 @@ class MainWindow(tk.Tk):
         ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=6, sticky=tk.W)
         ttk.Label(mainframe, text="Conection type:").grid(column=1, row=7, sticky=tk.E)
 
-        btn_ssh_key = ttk.Button(mainframe, text="Search SSH Key")
+        btn_ssh_key = ttk.Button(
+            mainframe,
+            text="Search SSH Key",
+            command=lambda: self._open_file(self.ssh_key),
+        )
         btn_ssh_key.grid(column=3, row=4, sticky=tk.W)
 
-        btn_ssh_config = ttk.Button(mainframe, text="Search SSH config")
+        btn_ssh_config = ttk.Button(
+            mainframe,
+            text="Search SSH config",
+            command=lambda: self._open_file(self.ssh_config),
+        )
         btn_ssh_config.grid(column=3, row=5, sticky=tk.W)
 
         ttk.Button(mainframe, text="Connect").grid(column=1, row=9, sticky=tk.W)
@@ -135,7 +144,13 @@ class MainWindow(tk.Tk):
         )
 
     def _exit_app(self) -> None:
+        """Exit from the app"""
         self.quit()
+
+    def _open_file(self, strVar: tk.StringVar) -> None:
+        str_filename = filedialog.askopenfilename()
+        if str_filename:
+            strVar.set(str_filename)
 
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
