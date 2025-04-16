@@ -79,6 +79,14 @@ class MainWindow(tk.Tk):
         ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=6, sticky=tk.W)
         ttk.Label(mainframe, text="Conection type:").grid(column=1, row=7, sticky=tk.E)
 
+        btn_ssh_key = ttk.Button(mainframe, text="Search SSH Key")
+        btn_ssh_key.grid(column=3, row=4, sticky=tk.W)
+
+        btn_ssh_config = ttk.Button(mainframe, text="Search SSH config")
+        btn_ssh_config.grid(column=3, row=5, sticky=tk.W)
+
+        ttk.Button(mainframe, text="Connect").grid(column=1, row=9, sticky=tk.W)
+
         self.conn_user = (
             txt_user,
             txt_password,
@@ -88,10 +96,12 @@ class MainWindow(tk.Tk):
             txt_user,
             txt_host,
             txt_ssh_key,
+            btn_ssh_key,
         )
         self.conn_ssh_host = (
             txt_ssh_config,
             txt_ssh_config_host,
+            btn_ssh_config,
         )
 
         for child in mainframe.winfo_children():
@@ -129,23 +139,23 @@ class MainWindow(tk.Tk):
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
 
-        for txt in self.conn_user:
-            txt.config(state="disabled")
-        for txt in self.conn_ssh_key:
-            txt.config(state="disabled")
-        for txt in self.conn_ssh_host:
-            txt.config(state="disabled")
+        for w in self.conn_user:
+            w.config(state="disabled")
+        for w in self.conn_ssh_key:
+            w.config(state="disabled")
+        for w in self.conn_ssh_host:
+            w.config(state="disabled")
 
         if conn_type == "ssh_key":
             self.connection_type.set("SSH key")
-            for txt in self.conn_ssh_key:
-                txt.config(state="normal")
+            for w in self.conn_ssh_key:
+                w.config(state="normal")
         elif conn_type == "ssh_host":
             self.connection_type.set("SSH host")
-            for txt in self.conn_ssh_host:
-                txt.config(state="normal")
+            for w in self.conn_ssh_host:
+                w.config(state="normal")
         else:
             # If none of above then use user
             self.connection_type.set("User")
-            for txt in self.conn_user:
-                txt.config(state="normal")
+            for w in self.conn_user:
+                w.config(state="normal")
