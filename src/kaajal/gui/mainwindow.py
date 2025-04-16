@@ -67,8 +67,9 @@ class MainWindow(tk.Tk):
 
         self.connection_type = tk.StringVar()
         ttk.Label(mainframe, textvariable=self.connection_type).grid(
-            column=2, row=7, sticky=tk.E
+            column=2, row=7, sticky=tk.W
         )
+        self.connection_type.set("Unknown")
 
         ttk.Label(mainframe, text="User:").grid(column=1, row=1, sticky=tk.W)
         ttk.Label(mainframe, text="Password:").grid(column=1, row=2, sticky=tk.W)
@@ -119,3 +120,27 @@ class MainWindow(tk.Tk):
 
     def _exit_app(self) -> None:
         self.quit()
+
+    def set_conn_type(self, conn_type: str) -> None:
+        """Set the GUI to the conn_type"""
+
+        for txt in self.conn_user:
+            txt.config(state="disabled")
+        for txt in self.conn_ssh_key:
+            txt.config(state="disabled")
+        for txt in self.conn_ssh_host:
+            txt.config(state="disabled")
+
+        if conn_type == "ssh_key":
+            self.connection_type.set("User/SSH Key/Host")
+            for txt in self.conn_ssh_key:
+                txt.config(state="normal")
+        elif conn_type == "ssh_host":
+            self.connection_type.set("SSH config/SSH host")
+            for txt in self.conn_ssh_host:
+                txt.config(state="normal")
+        else:
+            # If none of above then use user
+            self.connection_type.set("User/Password/Host")
+            for txt in self.conn_user:
+                txt.config(state="normal")
