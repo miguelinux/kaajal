@@ -109,17 +109,17 @@ def load(**kwargs) -> None:
     read_config_env()
 
     # 3. command line
-    if kwargs["user"]:
+    if kwargs.get("user"):
         config["user"] = kwargs["user"]
-    if kwargs["password"]:
+    if kwargs.get("password"):
         config["password"] = kwargs["password"]
-    if kwargs["host"]:
+    if kwargs.get("host"):
         config["host"] = kwargs["host"]
-    if kwargs["ssh_key"]:
+    if kwargs.get("ssh_key"):
         config["ssh_key"] = kwargs["ssh_key"]
-    if kwargs["ssh_config"]:
+    if kwargs.get("ssh_config"):
         config["ssh_config"] = kwargs["ssh_config"]
-    if kwargs["ssh_config_host"]:
+    if kwargs.get("ssh_config_host"):
         config["ssh_config_host"] = kwargs["ssh_config_host"]
 
 
