@@ -108,15 +108,20 @@ class MainWindow(tk.Tk):
         self.config(menu=menubar)
         # self._menus = {}  # type: Dict[str, tk.Menu]
         menu_file = tk.Menu(menubar)
-        menu_edit = tk.Menu(menubar)
+        menu_conn = tk.Menu(menubar)
 
         menubar.add_cascade(menu=menu_file, label="File", underline=0)
-        menubar.add_cascade(menu=menu_edit, label="Edit", underline=0)
+        menubar.add_cascade(menu=menu_conn, label="Connection", underline=1)
 
-        menu_file.add_command(label="New")
-        menu_file.add_command(label="Open")
-        menu_file.add_separator()
         menu_file.add_command(label="Exit", command=self._exit_app)
+
+        menu_conn.add_command(label="User", command=lambda: self.set_conn_type("user"))
+        menu_conn.add_command(
+            label="SSH Key", command=lambda: self.set_conn_type("ssh_key")
+        )
+        menu_conn.add_command(
+            label="SSH Host", command=lambda: self.set_conn_type("ssh_host")
+        )
 
     def _exit_app(self) -> None:
         self.quit()
@@ -132,15 +137,15 @@ class MainWindow(tk.Tk):
             txt.config(state="disabled")
 
         if conn_type == "ssh_key":
-            self.connection_type.set("User/SSH Key/Host")
+            self.connection_type.set("SSH key")
             for txt in self.conn_ssh_key:
                 txt.config(state="normal")
         elif conn_type == "ssh_host":
-            self.connection_type.set("SSH config/SSH host")
+            self.connection_type.set("SSH host")
             for txt in self.conn_ssh_host:
                 txt.config(state="normal")
         else:
             # If none of above then use user
-            self.connection_type.set("User/Password/Host")
+            self.connection_type.set("User")
             for txt in self.conn_user:
                 txt.config(state="normal")
