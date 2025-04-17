@@ -45,3 +45,6 @@ class SSHConnection:
                 logger.error('Missing arguments in "SSH host" connetion type')
         else:
             logger.error("No connection type setted")
+
+
+ssh_conn = SSHConnection()
