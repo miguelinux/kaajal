@@ -24,7 +24,7 @@ config: dict[str, str | int | bool | Literal["%", "{", "$"]] = {
     "ssh_key": "",
     "ssh_config": "",
     "ssh_config_host": "",
-    "conection_type": "",  # user, ssh_key, ssh_host
+    "connection_type": "",  # User, SSH key, SSH host
     "gui": False,
     "os": "",
     "log_level": logging.WARNING,
@@ -160,7 +160,9 @@ def setup_log(log_level: str | None = None, log_file: str | None = None) -> None
 
 
 def get_conn_type() -> str:
-    """Get the connection type based on current config"""
+    """Get the connection type based on current config:
+    User, SSH key or SSH host
+    """
 
     ret = ""
     if config["user"] and config["host"]:
@@ -171,4 +173,5 @@ def get_conn_type() -> str:
     elif config["ssh_config"] and config["ssh_config_host"]:
         ret = "SSH host"
 
+    config["connection_type"] = ret
     return ret
