@@ -25,26 +25,37 @@ class SSHConnection:
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
 
-    def connect(self, config) -> None:
+    def connect(self, config) -> str:
         """Connect to the server"""
+
+        error_message = ""
 
         if config["connection_type"] == "User":
             if config["user"] and config["host"] and config["password"]:
                 pass
             else:
-                logger.error('Missing arguments in "User" connetion type')
+                error_message = 'Missing arguments in "User" connetion type'
+                logger.error(error_message)
+
         elif config["connection_type"] == "SSH key":
             if config["user"] and config["host"] and config["ssh_key"]:
                 pass
             else:
-                logger.error('Missing arguments in "SSH key" connetion type')
+                error_message = 'Missing arguments in "SSH key" connetion type'
+                logger.error(error_message)
+
         elif config["connection_type"] == "SSH host":
             if config["ssh_config"] and config["ssh_config_host"]:
                 pass
             else:
-                logger.error('Missing arguments in "SSH host" connetion type')
+                error_message = 'Missing arguments in "SSH host" connetion type'
+                logger.error(error_message)
+
         else:
-            logger.error("No connection type setted")
+            error_message = "No connection type setted"
+            logger.error(error_message)
+
+        return error_message
 
 
 ssh_conn = SSHConnection()
