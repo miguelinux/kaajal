@@ -38,7 +38,11 @@ class SSHConnection:
 
         if config["connection_type"] == "User":
             if config["user"] and config["host"] and config["password"]:
-                pass
+                error_message = self._connect_user(
+                    user=config["user"],
+                    password=config["password"],
+                    host=config["host"],
+                )
             else:
                 error_message = 'Missing arguments in "User" connetion type'
                 logger.error(error_message)
@@ -62,6 +66,35 @@ class SSHConnection:
             logger.error(error_message)
 
         return error_message
+
+    def _connect_user(self, user: str, password: str, host: str) -> str:
+        """SSH Connect using user and password"""
+
+        return_message = ""
+
+        if self.is_connected:
+            return_message = "You are already connected."
+            return return_message
+
+        try:
+            self.client.connect(hostname=host, username=user, password=password)
+
+        except paramiko.AuthenticationException:
+            return_message = "Authentication Error: Incorrect credentials."
+            logger.exception(return_message)
+
+        except paramiko.ssh_exception.NoValidConnectionsError:
+            return_message = "No valid connection Error."
+            logger.exception(return_message)
+
+        except paramiko.SSHException:
+            return_message = "SSH session Error."
+            logger.exception(return_message)
+
+        else:
+            self.is_connected = True
+
+        return return_message
 
 
 ssh_conn = SSHConnection()
