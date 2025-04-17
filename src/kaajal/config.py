@@ -165,10 +165,10 @@ def get_conn_type() -> str:
     ret = ""
     if config["user"] and config["host"]:
         if config["password"]:
-            ret = "user"
+            ret = "User"
         elif config["ssh_key"]:
-            ret = "ssh_key"
+            ret = "SSH key"
     elif config["ssh_config"] and config["ssh_config_host"]:
-        ret = "ssh_host"
+        ret = "SSH host"
 
     return ret

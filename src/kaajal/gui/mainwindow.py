@@ -179,12 +179,12 @@ class MainWindow(tk.Tk):
         for widget in self.conn_ssh_host:
             widget.config(state="disabled")
 
-        if conn_type == "ssh_key":
-            self.connection_type.set("SSH key")
+        self.connection_type.set(conn_type)
+
+        if conn_type == "SSH key":
             for widget in self.conn_ssh_key:
                 widget.config(state="normal")
-        elif conn_type == "ssh_host":
-            self.connection_type.set("SSH host")
+        elif conn_type == "SSH host":
             for widget in self.conn_ssh_host:
                 widget.config(state="normal")
         else:
