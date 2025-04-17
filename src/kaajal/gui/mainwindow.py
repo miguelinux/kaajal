@@ -178,6 +178,7 @@ class MainWindow(tk.Tk):
         txt_values["ssh_key"] = self.ssh_key.get()
         txt_values["ssh_config"] = self.ssh_config.get()
         txt_values["ssh_config_host"] = self.ssh_config_host.get()
+        txt_values["connection_type"] = self.connection_type.get()
 
         return txt_values
 
