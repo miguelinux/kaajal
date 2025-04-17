@@ -167,6 +167,20 @@ class MainWindow(tk.Tk):
         if config["ssh_config_host"]:
             self.ssh_config_host.set(config["ssh_config_host"])
 
+    def get_txt_values(self) -> dict:
+        """Fill the txt fields with config values"""
+
+        txt_values: dict = {}
+
+        txt_values["user"] = self.user.get()
+        txt_values["password"] = self.password.get()
+        txt_values["host"] = self.host.get()
+        txt_values["ssh_key"] = self.ssh_key.get()
+        txt_values["ssh_config"] = self.ssh_config.get()
+        txt_values["ssh_config_host"] = self.ssh_config_host.get()
+
+        return txt_values
+
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
 
