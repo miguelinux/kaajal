@@ -42,6 +42,7 @@ class MainWindow(tk.Tk):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        self.protocol("WM_DELETE_WINDOW", self._exit_app)
 
         self.connection_type = tk.StringVar()
         lbl_conn = ttk.Label(mainframe, textvariable=self.connection_type)
