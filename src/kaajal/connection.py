@@ -8,6 +8,7 @@
 """Kaajal connection functions"""
 
 import logging
+import socket
 
 import paramiko
 from paramiko.config import SSHConfig
@@ -79,16 +80,24 @@ class SSHConnection:
         try:
             self.client.connect(hostname=host, username=user, password=password)
 
-        except paramiko.AuthenticationException:
-            return_message = "Authentication Error: Incorrect credentials."
+        except paramiko.AuthenticationException as e:
+            return_message = "AuthenticationException: " + str(e)
             logger.exception(return_message)
 
-        except paramiko.ssh_exception.NoValidConnectionsError:
-            return_message = "No valid connection Error."
+        except paramiko.ssh_exception.NoValidConnectionsError as e:
+            return_message = "NoValidConnectionsError: " + str(e)
             logger.exception(return_message)
 
-        except paramiko.SSHException:
-            return_message = "SSH session Error."
+        except paramiko.BadHostKeyException as e:
+            return_message = "BadHostKeyException: " + str(e)
+            logger.exception(return_message)
+
+        except socket.error as e:
+            return_message = "Socket Error: " + str(e)
+            logger.exception(return_message)
+
+        except paramiko.SSHException as e:
+            return_message = "SSHException: " + str(e)
             logger.exception(return_message)
 
         else:
