@@ -135,12 +135,12 @@ class MainWindow(tk.Tk):
 
         menu_file.add_command(label="Exit", command=self._exit_app)
 
-        menu_conn.add_command(label="User", command=lambda: self.set_conn_type("user"))
+        menu_conn.add_command(label="User", command=lambda: self.set_conn_type("User"))
         menu_conn.add_command(
-            label="SSH Key", command=lambda: self.set_conn_type("ssh_key")
+            label="SSH Key", command=lambda: self.set_conn_type("SSH key")
         )
         menu_conn.add_command(
-            label="SSH Host", command=lambda: self.set_conn_type("ssh_host")
+            label="SSH Host", command=lambda: self.set_conn_type("SSH host")
         )
 
     def _exit_app(self) -> None:
