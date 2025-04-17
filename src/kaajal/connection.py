@@ -26,6 +26,11 @@ class SSHConnection:
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
         self.is_connected = False
 
+    def close(self) -> None:
+        """Close SSH connection"""
+        if self.is_connected:
+            self.client.close()
+
     def connect(self, config) -> str:
         """Connect to the server"""
 
