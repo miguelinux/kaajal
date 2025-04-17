@@ -14,8 +14,6 @@ from kaajal.gui.mainwindow import MainWindow
 
 logger = logging.getLogger(__name__)
 
-main_window: MainWindow | None = None
-
 
 def kaajalw(standalone: bool = True) -> int:
     """Main function to use the GUI"""
