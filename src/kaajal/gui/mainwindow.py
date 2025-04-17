@@ -152,6 +152,21 @@ class MainWindow(tk.Tk):
         if str_filename:
             strVar.set(str_filename)
 
+    def fill_txt_values(self, config: dict) -> None:
+        """Fill the txt fields with config values"""
+        if config["user"]:
+            self.user.set(config["user"])
+        if config["password"]:
+            self.password.set(config["password"])
+        if config["host"]:
+            self.host.set(config["host"])
+        if config["ssh_key"]:
+            self.ssh_key.set(config["ssh_key"])
+        if config["ssh_config"]:
+            self.ssh_config.set(config["ssh_config"])
+        if config["ssh_config_host"]:
+            self.ssh_config_host.set(config["ssh_config_host"])
+
     def set_conn_type(self, conn_type: str) -> None:
         """Set the GUI to the conn_type"""
 

@@ -25,6 +25,7 @@ def kaajalw(standalone: bool = True) -> int:
     try:
         root = MainWindow()
         root.set_conn_type(config.get_conn_type())
+        root.fill_txt_values(config.config)
         root.mainloop()
     # TODO: Test this on a no GUI environment
     except Exception:
