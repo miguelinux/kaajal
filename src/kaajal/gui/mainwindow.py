@@ -150,6 +150,7 @@ class MainWindow(tk.Tk):
 
     def _exit_app(self) -> None:
         """Exit from the app"""
+        ssh_conn.close()
         self.quit()
 
     def _open_file(self, strVar: tk.StringVar) -> None:
