@@ -10,11 +10,13 @@
 import logging
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 from tkinter import ttk
 from tkinter.ttk import Widget
 
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
+from kaajal.connection import ssh_conn
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +97,9 @@ class MainWindow(tk.Tk):
         )
         btn_ssh_config.grid(column=3, row=6, sticky="we")
 
-        ttk.Button(mainframe, text="Connect").grid(column=1, row=9, sticky=tk.W)
+        ttk.Button(mainframe, text="Connect", command=self._do_connect).grid(
+            column=1, row=9, sticky=tk.W
+        )
 
         self.conn_user = (
             txt_user,
@@ -207,3 +211,12 @@ class MainWindow(tk.Tk):
             self.connection_type.set("User")
             for widget in self.conn_user:
                 widget.config(state="normal")
+
+    def _do_connect(self) -> None:
+        """Do SSH conection"""
+
+        error_msg = ssh_conn.connect(self.get_txt_values())
+
+        if error_msg:
+            messagebox.showerror("Connection error", error_msg)
+            return
