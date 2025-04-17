@@ -14,6 +14,8 @@ from kaajal.gui.mainwindow import MainWindow
 
 logger = logging.getLogger(__name__)
 
+main_window: MainWindow | None = None
+
 
 def kaajalw(standalone: bool = True) -> int:
     """Main function to use the GUI"""
@@ -23,10 +25,10 @@ def kaajalw(standalone: bool = True) -> int:
         config.setup_log()
 
     try:
-        root = MainWindow()
-        root.set_conn_type(config.get_conn_type())
-        root.fill_txt_values(config.config)
-        root.mainloop()
+        main_window = MainWindow()
+        main_window.set_conn_type(config.get_conn_type())
+        main_window.fill_txt_values(config.config)
+        main_window.mainloop()
     # TODO: Test this on a no GUI environment
     except Exception:
         logger.exception("Internal launch or mainloop error")
