@@ -37,13 +37,19 @@ class SSHConnection:
 
         error_message = ""
 
+        connect_args = {
+            "hostname": "",
+            "username": "",
+            "port": 22,
+            "timeout": 15,
+        }
+
         if config["connection_type"] == "User":
             if config["user"] and config["host"] and config["password"]:
-                error_message = self._connect_user(
-                    user=config["user"],
-                    password=config["password"],
-                    host=config["host"],
-                )
+                connect_args["hostname"] = config["host"]
+                connect_args["username"] = config["user"]
+                connect_args["password"] = config["password"]
+                error_message = self._connect(**connect_args)
             else:
                 error_message = 'Missing arguments in "User" connetion type'
                 logger.error(error_message)
@@ -68,7 +74,7 @@ class SSHConnection:
 
         return error_message
 
-    def _connect_user(self, user: str, password: str, host: str) -> str:
+    def _connect(self, **kwargs) -> str:
         """SSH Connect using user and password"""
 
         return_message = ""
@@ -78,7 +84,7 @@ class SSHConnection:
             return return_message
 
         try:
-            self.client.connect(hostname=host, username=user, password=password)
+            self.client.connect(**kwargs)
 
         except paramiko.AuthenticationException as e:
             return_message = "AuthenticationException: " + str(e)
