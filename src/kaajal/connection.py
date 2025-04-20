@@ -32,6 +32,7 @@ class SSHConnection:
         """Close SSH connection"""
         if self.is_connected:
             self.client.close()
+            logger.info("Closing SSH connection")
 
     def connect(self, config) -> str:
         """Connect to the server"""
