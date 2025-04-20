@@ -193,7 +193,7 @@ def save() -> None:
     config_path = os.path.join(ucd, "kaaja.conf")
 
     str_content = "# Autosaved config\n"
-    str_content += "# vi: set shiftwidth=4 tabstop=8 expandtab: filetype=sh\n"
+    str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
     str_content += "# User to configure the platform\n"
     str_content += "USER=" + config["user"] + "\n\n"
     str_content += "# User passowrd\n"
