@@ -24,11 +24,18 @@ def kaajalw(standalone: bool = True) -> int:
 
     try:
         main_window = MainWindow()
+        main_window.iconify()
         main_window.set_conn_type(config.get_conn_type())
         main_window.fill_txt_values(config.config)
+        main_window.update()
+        main_window.deiconify()
+        # iconify, update and deiconify: used to window pops up on top on Windows
         main_window.mainloop()
     # TODO: Test this on a no GUI environment
     except Exception:
         logger.exception("Internal launch or mainloop error")
+    else:
+        config.set(main_window.get_txt_values())
+        config.save()
 
     return 0
