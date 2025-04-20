@@ -71,7 +71,58 @@ class SSHConnection:
 
         elif config["connection_type"] == "SSH host":
             if config["ssh_config"] and config["ssh_config_host"]:
-                pass
+                if os.path.exists(config["ssh_config"]):
+                    ssh_config = SSHConfig.from_path(config["ssh_config"])
+                    host_config = ssh_config.lookup(config["ssh_config_host"])
+
+                    if len(host_config) < 3:
+                        error_message = (
+                            config["ssh_config_host"]
+                            + ", does not have enough entries."
+                        )
+                        logger.error(error_message)
+                        return error_message
+
+                    if "hostname" in host_config:
+                        connect_args["hostname"] = host_config["hostname"]
+                    else:
+                        error_message = (
+                            config["ssh_config_host"] + " (Hostname): not found."
+                        )
+                        logger.error(error_message)
+                        return error_message
+
+                    if "user" in host_config:
+                        connect_args["username"] = host_config["user"]
+                    else:
+                        error_message = (
+                            config["ssh_config_host"] + " (User): not found."
+                        )
+                        logger.error(error_message)
+                        return error_message
+
+                    if "identityfile" in host_config:
+                        connect_args["key_filename"] = host_config["identityfile"]
+                    else:
+                        error_message = (
+                            config["ssh_config_host"] + " (IdentityFile): not found."
+                        )
+                        logger.error(error_message)
+                        return error_message
+
+                    if "port" in host_config:
+                        connect_args["port"] = int(host_config["port"])
+
+                    if "connecttimeout" in host_config:
+                        connect_args["timeout"] = float(host_config["connecttimeout"])
+
+                    ##if 'proxycommand' in user_config:
+                    ##    cfg['sock'] = paramiko.ProxyCommand(user_config['proxycommand'])
+
+                    error_message = self._connect(**connect_args)
+                else:
+                    error_message = config["ssh_config"] + ": Not found."
+                    logger.error(error_message)
             else:
                 error_message = 'Missing arguments in "SSH host" connetion type'
                 logger.error(error_message)
