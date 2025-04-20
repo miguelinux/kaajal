@@ -8,6 +8,7 @@
 """Kaajal connection functions"""
 
 import logging
+import os
 import socket
 
 import paramiko
@@ -56,7 +57,14 @@ class SSHConnection:
 
         elif config["connection_type"] == "SSH key":
             if config["user"] and config["host"] and config["ssh_key"]:
-                pass
+                if os.path.exists(config["ssh_key"]):
+                    connect_args["hostname"] = config["host"]
+                    connect_args["username"] = config["user"]
+                    connect_args["key_filename"] = config["ssh_key"]
+                    error_message = self._connect(**connect_args)
+                else:
+                    error_message = config["ssh_key"] + ": Not found."
+                    logger.error(error_message)
             else:
                 error_message = 'Missing arguments in "SSH key" connetion type'
                 logger.error(error_message)
