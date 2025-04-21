@@ -51,6 +51,9 @@ class SSHConnection:
                 connect_args["hostname"] = config["host"]
                 connect_args["username"] = config["user"]
                 connect_args["password"] = config["password"]
+                # https://stackoverflow.com/questions/26712959/paramiko-connect-without-asking-ssh-key
+                connect_args["look_for_keys"] = False
+                connect_args["allow_agent"] = False
                 error_message = self._connect(**connect_args)
             else:
                 error_message = 'Missing arguments in "User" connetion type'
