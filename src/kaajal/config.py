@@ -258,7 +258,7 @@ class Config:
         str_content += "# Style of the format\n"
         str_content += "#STYLE=" + self.log_config["style"] + "\n\n"
         str_content += "# Date format\n"
-        str_content += "#DATEFMT=" + self.log_config["datefmt"]
+        str_content += "#DATEFMT=" + self.log_config["datefmt"] + "\n"
 
         with open(config_path, mode="w", encoding="utf-8") as conf_file:
             conf_file.write(str_content)
