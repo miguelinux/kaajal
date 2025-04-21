@@ -247,9 +247,6 @@ class Config:
 
         config_path = os.path.join(ucd, LOG_CONFIG_NAME)
 
-        if os.path.exists(config_path):
-            return
-
         str_content = "# Autosaved logger config\n"
         str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
         str_content += "# Log level: CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET\n"
