@@ -66,7 +66,7 @@ class Config:
 
                     item = line.split("=")
                     if len(item) == two_items:
-                        values[item[0].strip().lower()] = item[1].strip().lower()
+                        values[item[0].strip().lower()] = item[1].strip()
 
             for key in config:
                 if key in values:
