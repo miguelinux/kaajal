@@ -9,7 +9,6 @@
 
 import logging
 import os
-from typing import Literal
 
 import platformdirs
 from kaajal.__about__ import __appauthor__
@@ -17,197 +16,224 @@ from kaajal.__about__ import __appname__
 
 logger = logging.getLogger(__name__)
 
-config: dict[str, str | int | bool | Literal["%", "{", "$"]] = {
-    "user": "",
-    "password": "",
-    "host": "",
-    "ssh_key": "",
-    "ssh_config": "",
-    "ssh_config_host": "",
-    "connection_type": "",  # User, SSH key, SSH host
-    "gui": False,
-    "os": "",
-    "log_level": logging.WARNING,
-    "log_file": "",
-    "log_format": "{asctime:s} {levelname:<8s}:{name:<15s}: {message:s}",
-    "log_style": "{",
-    "log_datefmt": "%Y-%m-%d %H:%M:%S",
-}
+CONN_CONFIG_NAME = "connection.conf"
+LOG_CONFIG_NAME = "logger.conf"
+APP_CONFIG_NAME = "app.conf"
 
 
-def read_config_from(path: str) -> None:
-    """Read configuration from a file located in path variable"""
+class Config:
+    """Configuration class"""
 
-    # the items are: variable and value (i.e. variable = value)
-    two_items = 2
-    values = {}
+    def __init__(self) -> None:
+        """Class constructor of Config"""
 
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as conf_file:
-            for line in conf_file:
-                if not line or not line.strip():
-                    continue
-                if line.strip()[0] == "#":
-                    continue
+        self.conn_config = {
+            "user": "",
+            "password": "",
+            "host": "",
+            "ssh_key": "",
+            "ssh_config": "",
+            "ssh_config_host": "",
+            "connection_type": "",  # User, SSH key, SSH host
+        }
 
-                item = line.split("=")
-                if len(item) == two_items:
-                    values[item[0].strip().lower()] = item[1].strip().lower()
+        self.gui_config = {
+            "gui": "no",
+        }
 
-        for key in config:
-            if key in values:
-                config[key] = values[key]
+        self.log_config = {
+            "level": "WARNING",
+            "filename": "",
+            "format": "{asctime:s} {levelname:<8s}:{name:<15s}: {message:s}",
+            "style": "{",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        }
 
-    else:
-        logger.warning("%s: not found", path)
+    def read_config_from(self, path: str, config: dict) -> None:
+        """Read configuration from a file located in path variable"""
 
+        # the items are: variable and value (i.e. variable = value)
+        two_items = 2
+        values = {}
 
-def read_config_env() -> None:
-    """Read configuration from environment variables"""
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as conf_file:
+                for line in conf_file:
+                    if not line or not line.strip():
+                        continue
+                    if line.strip()[0] == "#":
+                        continue
 
-    user = os.environ.get("KAAJAL_USER")
-    password = os.environ.get("KAAJAL_PASSWORD")
-    host = os.environ.get("KAAJAL_HOST")
-    ssh_key = os.environ.get("KAAJAL_SSH_KEY")
-    ssh_config = os.environ.get("KAAJAL_SSH_CONFIG")
-    ssh_config_host = os.environ.get("KAAJAL_SSH_CONFIG_HOST")
+                    item = line.split("=")
+                    if len(item) == two_items:
+                        values[item[0].strip().lower()] = item[1].strip().lower()
 
-    if user:
-        config["user"] = user
-    if password:
-        config["password"] = password
-    if host:
-        config["host"] = host
-    if ssh_key:
-        config["ssh_key"] = ssh_key
-    if ssh_config:
-        config["ssh_config"] = ssh_config
-    if ssh_config_host:
-        config["ssh_config_host"] = ssh_config_host
+            for key in config:
+                if key in values:
+                    config[key] = values[key]
 
+        else:
+            logger.warning("%s: not found", path)
 
-def load(**kwargs) -> None:
-    """
-    Get configuration finding/reading it, in the next order
-    1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
-    2. virtual environemnt KAAJAL_XXXX
-    3. command line
-    """
+    def _read_conn_config_env(self) -> None:
+        """Read configuration from environment variables"""
 
-    ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
+        user = os.environ.get("KAAJAL_USER")
+        password = os.environ.get("KAAJAL_PASSWORD")
+        host = os.environ.get("KAAJAL_HOST")
+        ssh_key = os.environ.get("KAAJAL_SSH_KEY")
+        ssh_config = os.environ.get("KAAJAL_SSH_CONFIG")
+        ssh_config_host = os.environ.get("KAAJAL_SSH_CONFIG_HOST")
 
-    # 1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
-    if os.path.exists(ucd):
-        config_file = os.path.join(ucd, "kaaja.conf")
-        if os.path.exists(config_file):
-            read_config_from(config_file)
+        if user:
+            self.conn_config["user"] = user
+        if password:
+            self.conn_config["password"] = password
+        if host:
+            self.conn_config["host"] = host
+        if ssh_key:
+            self.conn_config["ssh_key"] = ssh_key
+        if ssh_config:
+            self.conn_config["ssh_config"] = ssh_config
+        if ssh_config_host:
+            self.conn_config["ssh_config_host"] = ssh_config_host
 
-    # 2. virtual environemnt KAAJAL_XXXX
-    read_config_env()
+    def load_conn_config(self, **kwargs) -> None:
+        """
+        Get configuration finding/reading it, in the next order
+        1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
+        2. virtual environemnt KAAJAL_XXXX
+        3. command line
+        """
 
-    # 3. command line
-    if kwargs.get("user"):
-        config["user"] = kwargs["user"]
-    if kwargs.get("password"):
-        config["password"] = kwargs["password"]
-    if kwargs.get("host"):
-        config["host"] = kwargs["host"]
-    if kwargs.get("ssh_key"):
-        config["ssh_key"] = kwargs["ssh_key"]
-    if kwargs.get("ssh_config"):
-        config["ssh_config"] = kwargs["ssh_config"]
-    if kwargs.get("ssh_config_host"):
-        config["ssh_config_host"] = kwargs["ssh_config_host"]
+        ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
 
+        # 1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
+        if os.path.exists(ucd):
+            config_file_path = os.path.join(ucd, CONN_CONFIG_NAME)
+            if os.path.exists(config_file_path):
+                self.read_config_from(config_file_path, self.conn_config)
 
-def setup_log(log_level: str | None = None, log_file: str | None = None) -> None:
-    """Setup the way we log the application"""
+        # 2. virtual environemnt KAAJAL_XXXX
+        self._read_conn_config_env()
 
-    if log_level:
-        log_level = log_level.lower()
-        if log_level == "notset":
-            config["log_level"] = logging.NOTSET
-        elif log_level == "debug":
-            config["log_level"] = logging.DEBUG
-        elif log_level == "info":
-            config["log_level"] = logging.INFO
-        elif log_level == "warning":
-            config["log_level"] = logging.WARNING
-        elif log_level == "error":
-            config["log_level"] = logging.ERROR
-        elif log_level == "critical":
-            config["log_level"] = logging.CRITICAL
+        # 3. command line
+        if kwargs.get("user"):
+            self.conn_config["user"] = kwargs["user"]
+        if kwargs.get("password"):
+            self.conn_config["password"] = kwargs["password"]
+        if kwargs.get("host"):
+            self.conn_config["host"] = kwargs["host"]
+        if kwargs.get("ssh_key"):
+            self.conn_config["ssh_key"] = kwargs["ssh_key"]
+        if kwargs.get("ssh_config"):
+            self.conn_config["ssh_config"] = kwargs["ssh_config"]
+        if kwargs.get("ssh_config_host"):
+            self.conn_config["ssh_config_host"] = kwargs["ssh_config_host"]
 
-    if log_file:
-        config["log_file"] = log_file
-        logging.basicConfig(
-            filename=log_file,
-            level=config["log_level"],
-            format=str(config["log_format"]),
-            style=config["log_style"],  # type: ignore[arg-type]
-            datefmt=str(config["log_datefmt"]),
+        self.get_conn_type()
+
+    def load_log_config(
+        self, log_level: str | None = None, log_file: str | None = None
+    ) -> None:
+        """Setup the way we log the application"""
+
+        ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
+
+        if os.path.exists(ucd):
+            config_file_path = os.path.join(ucd, LOG_CONFIG_NAME)
+            if os.path.exists(config_file_path):
+                self.read_config_from(config_file_path, self.log_config)
+
+        if log_level:
+            level_num = logging.getLevelName(log_level.upper())
+            if isinstance(level_num, int):
+                self.log_config["level"] = logging.getLevelName(level_num)
+
+        if log_file:
+            self.log_config["filename"] = log_file
+
+        local_config = self.log_config.copy()
+
+        if not local_config.get("filename"):
+            local_config.pop("filename")
+
+        logging.basicConfig(**local_config)  # type: ignore[arg-type]
+
+    def get_conn_type(self) -> str:
+        """Get the connection type based on current conn_config:
+        User, SSH key or SSH host
+        """
+
+        if self.conn_config["connection_type"] == "User":
+            if (
+                self.conn_config["user"]
+                and self.conn_config["host"]
+                and self.conn_config["password"]
+            ):
+                return "User"
+
+        if self.conn_config["connection_type"] == "SSH key":
+            if (
+                self.conn_config["user"]
+                and self.conn_config["host"]
+                and self.conn_config["ssh_key"]
+            ):
+                return "SSH key"
+
+        if self.conn_config["connection_type"] == "SSH host":
+            if self.conn_config["ssh_config"] and self.conn_config["ssh_config_host"]:
+                return "SSH host"
+
+        ret = ""
+
+        if self.conn_config["user"] and self.conn_config["host"]:
+            if self.conn_config["password"]:
+                ret = "User"
+            elif self.conn_config["ssh_key"]:
+                ret = "SSH key"
+        elif self.conn_config["ssh_config"] and self.conn_config["ssh_config_host"]:
+            ret = "SSH host"
+
+        self.conn_config["connection_type"] = ret
+        return ret
+
+    def set_conn_config(self, cfg_arg: dict) -> None:
+        for key in self.conn_config:
+            if key in cfg_arg:
+                self.conn_config[key] = cfg_arg[key]
+
+    def save_conn_config(self) -> None:
+        """Save the conn_config to the default location"""
+
+        ucd = platformdirs.user_config_dir(
+            appname=__appname__, appauthor=__appauthor__, ensure_exists=True
         )
-    else:
-        logging.basicConfig(
-            level=config["log_level"],
-            format=str(config["log_format"]),
-            style=config["log_style"],  # type: ignore[arg-type]
-            datefmt=str(config["log_datefmt"]),
-        )
+        if not os.path.exists(ucd):
+            logger.warning("%s: Can not create directory.", ucd)
+            return
+
+        config_path = os.path.join(ucd, CONN_CONFIG_NAME)
+
+        str_content = "# Autosaved connection config\n"
+        str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
+        str_content += "# User to configure the platform\n"
+        str_content += "USER=" + self.conn_config["user"] + "\n\n"
+        str_content += "# User passowrd\n"
+        str_content += "PASSWORD=" + self.conn_config["password"] + "\n\n"
+        str_content += "# Remote Host IP or DNS name\n"
+        str_content += "HOST=" + self.conn_config["host"] + "\n\n"
+        str_content += "# User SSH key to connect to the platform\n"
+        str_content += "SSH_KEY=" + self.conn_config["ssh_key"] + "\n\n"
+        str_content += "# User SSH self.conn_config file\n"
+        str_content += "SSH_CONFIG=" + self.conn_config["ssh_config"] + "\n\n"
+        str_content += "# Host from the user SSH config file\n"
+        str_content += "SSH_CONFIG_HOST=" + self.conn_config["ssh_config_host"] + "\n\n"
+        str_content += "# Type of connection to use (User, SSH key or SSH host)\n"
+        str_content += "CONNECTION_TYPE=" + self.conn_config["connection_type"] + "\n"
+
+        with open(config_path, mode="w", encoding="utf-8") as conf_file:
+            conf_file.write(str_content)
 
 
-def get_conn_type() -> str:
-    """Get the connection type based on current config:
-    User, SSH key or SSH host
-    """
-
-    ret = ""
-    if config["user"] and config["host"]:
-        if config["password"]:
-            ret = "User"
-        elif config["ssh_key"]:
-            ret = "SSH key"
-    elif config["ssh_config"] and config["ssh_config_host"]:
-        ret = "SSH host"
-
-    config["connection_type"] = ret
-    return ret
-
-
-def set(cfg_arg: dict) -> None:
-    for key in config:
-        if key in cfg_arg:
-            config[key] = cfg_arg[key]
-
-
-def save() -> None:
-    """Save the config to the default location"""
-
-    ucd = platformdirs.user_config_dir(
-        appname=__appname__, appauthor=__appauthor__, ensure_exists=True
-    )
-    if not os.path.exists(ucd):
-        logger.warning("%s: Can not create directory.", ucd)
-        return
-
-    config_path = os.path.join(ucd, "kaaja.conf")
-
-    str_content = "# Autosaved config\n"
-    str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
-    str_content += "# User to configure the platform\n"
-    str_content += "USER=" + config["user"] + "\n\n"
-    str_content += "# User passowrd\n"
-    str_content += "PASSWORD=" + config["password"] + "\n\n"
-    str_content += "# Remote Host IP or DNS name\n"
-    str_content += "HOST=" + config["host"] + "\n\n"
-    str_content += "# User SSH key to connect to the platform\n"
-    str_content += "SSH_KEY=" + config["ssh_key"] + "\n\n"
-    str_content += "# User SSH config file\n"
-    str_content += "SSH_CONFIG=" + config["ssh_config"] + "\n\n"
-    str_content += "# Host from the user SSH config file\n"
-    str_content += "SSH_CONFIG_HOST=" + config["ssh_config_host"] + "\n\n"
-    str_content += "# Type of connection to use (User, SSH key or SSH host)\n"
-    str_content += "CONNECTION_TYPE=" + config["connection_type"] + "\n"
-
-    with open(config_path, mode="w", encoding="utf-8") as conf_file:
-        conf_file.write(str_content)
+app_config = Config()

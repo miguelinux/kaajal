@@ -16,6 +16,7 @@ from tkinter.ttk import Widget
 
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
+from kaajal.config import app_config
 from kaajal.connection import ssh_conn
 
 logger = logging.getLogger(__name__)
@@ -222,3 +223,5 @@ class MainWindow(tk.Tk):
         if error_msg:
             messagebox.showerror("Connection error", error_msg)
             return
+
+        app_config.set_conn_config(self.get_txt_values())

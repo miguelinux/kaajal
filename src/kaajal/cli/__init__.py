@@ -12,10 +12,10 @@ import os
 from platform import system
 
 import click
-from kaajal import config
 from kaajal import my_setup
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
+from kaajal.config import app_config
 from kaajal.gui import kaajalw
 
 logger = logging.getLogger(__name__)
@@ -44,12 +44,11 @@ logger = logging.getLogger(__name__)
 def kaajal(**kwargs) -> int:
     """Kaajal: setup a remote platform"""
 
-    config.load(**kwargs)
+    app_config.load_conn_config(**kwargs)
 
-    config.setup_log(kwargs["log_level"], kwargs["log_file"])
+    app_config.load_log_config(kwargs["log_level"], kwargs["log_file"])
 
     my_system_os = system()
-    config.config["os"] = my_system_os
 
     display = "Allow GUI"
     # On Linux DISPLAY environment variable is used only with GUI
@@ -57,7 +56,7 @@ def kaajal(**kwargs) -> int:
         display = os.environ.get("DISPLAY", "")
 
     if kwargs["gui"] and display:
-        config.config["gui"] = True
+        app_config.gui_config["gui"] = "yes"
         kaajalw(False)
     else:
         my_setup()
