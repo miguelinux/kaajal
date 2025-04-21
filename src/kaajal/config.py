@@ -199,6 +199,7 @@ class Config:
         return ret
 
     def set_conn_config(self, cfg_arg: dict) -> None:
+        """Set the value of the config using a dictionary as argument"""
         for key in self.conn_config:
             if key in cfg_arg:
                 self.conn_config[key] = cfg_arg[key]
