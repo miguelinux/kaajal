@@ -16,7 +16,6 @@ from kaajal import my_setup
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
 from kaajal.config import app_config
-from kaajal.gui import kaajalw
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +55,9 @@ def kaajal(**kwargs) -> int:
         display = os.environ.get("DISPLAY", "")
 
     if kwargs["gui"] and display:
+        # Call gui lib only when we need it
+        from kaajal.gui import kaajalw
+
         app_config.gui_config["gui"] = "yes"
         kaajalw(False)
     else:
