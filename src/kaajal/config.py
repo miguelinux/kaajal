@@ -235,5 +235,36 @@ class Config:
         with open(config_path, mode="w", encoding="utf-8") as conf_file:
             conf_file.write(str_content)
 
+    def save_log_config(self) -> None:
+        """Save the log_config to the default location"""
+
+        ucd = platformdirs.user_config_dir(
+            appname=__appname__, appauthor=__appauthor__, ensure_exists=True
+        )
+        if not os.path.exists(ucd):
+            logger.warning("%s: Can not create directory.", ucd)
+            return
+
+        config_path = os.path.join(ucd, LOG_CONFIG_NAME)
+
+        if os.path.exists(config_path):
+            return
+
+        str_content = "# Autosaved logger config\n"
+        str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
+        str_content += "# Log level: CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET\n"
+        str_content += "LEVEL=" + self.log_config["level"] + "\n\n"
+        str_content += "# Filename to save the log if any\n"
+        str_content += "FILENAME=" + self.log_config["filename"] + "\n\n"
+        str_content += "# Format to display the log\n"
+        str_content += "#FORMAT=" + self.log_config["format"] + "\n\n"
+        str_content += "# Style of the format\n"
+        str_content += "#STYLE=" + self.log_config["style"] + "\n\n"
+        str_content += "# Date format\n"
+        str_content += "#DATEFMT=" + self.log_config["datefmt"]
+
+        with open(config_path, mode="w", encoding="utf-8") as conf_file:
+            conf_file.write(str_content)
+
 
 app_config = Config()

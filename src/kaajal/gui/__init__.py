@@ -36,5 +36,6 @@ def kaajalw(standalone: bool = True) -> int:
         logger.exception("Internal launch or mainloop error")
     else:
         app_config.save_conn_config()
+        app_config.save_log_config()
 
     return 0
