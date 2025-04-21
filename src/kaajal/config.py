@@ -9,6 +9,7 @@
 
 import logging
 import os
+from typing import Optional
 
 import platformdirs
 from kaajal.__about__ import __appauthor__
@@ -134,7 +135,7 @@ class Config:
         self.get_conn_type()
 
     def load_log_config(
-        self, log_level: str | None = None, log_file: str | None = None
+        self, log_level: Optional[str] = None, log_file: Optional[str] = None
     ) -> None:
         """Setup the way we log the application"""
 
