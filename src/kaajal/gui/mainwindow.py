@@ -124,6 +124,11 @@ class MainWindow(tk.Tk):
         for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
+        self.str_status_bar = tk.StringVar()
+        lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
+        lbl_status_bar.configure(relief="sunken", anchor=tk.E)
+        lbl_status_bar.grid(column=1, row=10, columnspan=5, sticky="nwes")
+
     def _create_menus(self) -> None:
         """Create menus for the window"""
 
