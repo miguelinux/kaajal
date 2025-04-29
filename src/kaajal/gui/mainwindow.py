@@ -33,101 +33,111 @@ class MainWindow(tk.Tk):
         tk.Tk.__init__(self, className="Kaajal")
 
         self.title(__appname__ + " " + __version__)
-        # self.geometry("640x480")
-        # self.minsize(400, 200)
-        # self.maxsize(800, 600)
-
-        self._create_menus()
-
-        mainframe = ttk.Frame(self, padding="3 3 12 12")
-        mainframe.grid(column=0, row=0, sticky="nwes")
-
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.protocol("WM_DELETE_WINDOW", self._exit_app)
 
+        self._create_menus()
+
+        mainframe = ttk.Frame(self, padding="3 3 3 3")
+
+        notebook = ttk.Notebook(mainframe)
+        notebook.pack(expand=True, fill="both")
+
+        conn_frame = ttk.Frame(notebook)
+        conn_frame.grid(column=0, row=0, sticky="nwes")
+
         self.connection_type = tk.StringVar()
-        lbl_conn = ttk.Label(mainframe, textvariable=self.connection_type)
+        self.user = tk.StringVar()
+        self.password = tk.StringVar()
+        self.host = tk.StringVar()
+        self.ssh_key = tk.StringVar()
+        self.ssh_config = tk.StringVar()
+        self.ssh_config_host = tk.StringVar()
+        self.str_status_bar = tk.StringVar()
+
+        self._create_conn_frame(conn_frame)
+
+        lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
+        lbl_status_bar.configure(relief="sunken", anchor=tk.E)
+        lbl_status_bar.pack(fill="x", side="bottom")
+
+        notebook.add(conn_frame, text="Connection")
+        mainframe.pack(expand=True, fill="both")
+
+    def _create_conn_frame(self, frame: ttk.Frame) -> None:
+        """Creation of the Connection frame"""
+
+        lbl_conn = ttk.Label(frame, textvariable=self.connection_type)
         lbl_conn.configure(foreground="blue")
         lbl_conn.grid(column=2, row=1, sticky=tk.W)
         self.connection_type.set("Unknown")
 
-        self.user = tk.StringVar()
-        txt_user = ttk.Entry(mainframe, width=15, textvariable=self.user)
+        txt_user = ttk.Entry(frame, width=15, textvariable=self.user)
         txt_user.grid(column=2, row=2, sticky="we")
 
-        self.password = tk.StringVar()
-        txt_password = ttk.Entry(mainframe, width=15, textvariable=self.password)
+        txt_password = ttk.Entry(frame, width=15, textvariable=self.password)
         txt_password.grid(column=2, row=3, sticky="we")
 
-        self.host = tk.StringVar()
-        txt_host = ttk.Entry(mainframe, width=15, textvariable=self.host)
+        txt_host = ttk.Entry(frame, width=15, textvariable=self.host)
         txt_host.grid(column=2, row=4, sticky="we")
 
-        self.ssh_key = tk.StringVar()
-        txt_ssh_key = ttk.Entry(mainframe, width=15, textvariable=self.ssh_key)
+        txt_ssh_key = ttk.Entry(frame, width=15, textvariable=self.ssh_key)
         txt_ssh_key.grid(column=2, row=5, sticky="we")
 
-        self.ssh_config = tk.StringVar()
-        txt_ssh_config = ttk.Entry(mainframe, width=15, textvariable=self.ssh_config)
+        txt_ssh_config = ttk.Entry(frame, width=15, textvariable=self.ssh_config)
         txt_ssh_config.grid(column=2, row=6, sticky="we")
 
-        self.ssh_config_host = tk.StringVar()
         txt_ssh_config_host = ttk.Entry(
-            mainframe, width=15, textvariable=self.ssh_config_host
+            frame, width=15, textvariable=self.ssh_config_host
         )
         txt_ssh_config_host.grid(column=2, row=7, sticky="we")
 
-        ttk.Label(mainframe, text="Conection type:").grid(column=1, row=1, sticky=tk.E)
-        ttk.Label(mainframe, text="User:").grid(column=1, row=2, sticky=tk.W)
-        ttk.Label(mainframe, text="Password:").grid(column=1, row=3, sticky=tk.W)
-        ttk.Label(mainframe, text="Host:").grid(column=1, row=4, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH key:").grid(column=1, row=5, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH config:").grid(column=1, row=6, sticky=tk.W)
-        ttk.Label(mainframe, text="SSH config host:").grid(column=1, row=7, sticky=tk.W)
+        ttk.Label(frame, text="Conection type:").grid(column=1, row=1, sticky=tk.E)
+        ttk.Label(frame, text="User:").grid(column=1, row=2, sticky=tk.W)
+        ttk.Label(frame, text="Password:").grid(column=1, row=3, sticky=tk.W)
+        ttk.Label(frame, text="Host:").grid(column=1, row=4, sticky=tk.W)
+        ttk.Label(frame, text="SSH key:").grid(column=1, row=5, sticky=tk.W)
+        ttk.Label(frame, text="SSH config:").grid(column=1, row=6, sticky=tk.W)
+        ttk.Label(frame, text="SSH config host:").grid(column=1, row=7, sticky=tk.W)
 
         btn_ssh_key = ttk.Button(
-            mainframe,
+            frame,
             text="Search SSH Key",
             command=lambda: self._open_file(self.ssh_key),
         )
         btn_ssh_key.grid(column=3, row=5, sticky="we")
 
         btn_ssh_config = ttk.Button(
-            mainframe,
+            frame,
             text="Search SSH config",
             command=lambda: self._open_file(self.ssh_config),
         )
         btn_ssh_config.grid(column=3, row=6, sticky="we")
 
-        ttk.Button(mainframe, text="Connect", command=self._do_connect).grid(
+        ttk.Button(frame, text="Connect", command=self._do_connect).grid(
             column=1, row=9, sticky=tk.W
         )
 
-        self.conn_user = (
+        self.widgets_conn_user = (
             txt_user,
             txt_password,
             txt_host,
         )
-        self.conn_ssh_key = (
+        self.widgets_conn_ssh_key = (
             txt_user,
             txt_host,
             txt_ssh_key,
             btn_ssh_key,
         )
-        self.conn_ssh_host = (
+        self.widgets_conn_ssh_host = (
             txt_ssh_config,
             txt_ssh_config_host,
             btn_ssh_config,
         )
 
-        for child in mainframe.winfo_children():
+        for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
-
-        self.str_status_bar = tk.StringVar()
-        lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
-        lbl_status_bar.configure(relief="sunken", anchor=tk.E)
-        lbl_status_bar.grid(column=1, row=10, columnspan=5, sticky="nwes")
 
     def _create_menus(self) -> None:
         """Create menus for the window"""
@@ -205,25 +215,25 @@ class MainWindow(tk.Tk):
 
         widget: Optional[Widget] = None
 
-        for widget in self.conn_user:
+        for widget in self.widgets_conn_user:
             widget.config(state="disabled")
-        for widget in self.conn_ssh_key:
+        for widget in self.widgets_conn_ssh_key:
             widget.config(state="disabled")
-        for widget in self.conn_ssh_host:
+        for widget in self.widgets_conn_ssh_host:
             widget.config(state="disabled")
 
         self.connection_type.set(conn_type)
 
         if conn_type == "SSH key":
-            for widget in self.conn_ssh_key:
+            for widget in self.widgets_conn_ssh_key:
                 widget.config(state="normal")
         elif conn_type == "SSH host":
-            for widget in self.conn_ssh_host:
+            for widget in self.widgets_conn_ssh_host:
                 widget.config(state="normal")
         else:
             # If none of above then use user
             self.connection_type.set("User")
-            for widget in self.conn_user:
+            for widget in self.widgets_conn_user:
                 widget.config(state="normal")
 
     def _do_connect(self) -> None:
