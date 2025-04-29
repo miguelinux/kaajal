@@ -141,9 +141,11 @@ class MainWindow(tk.Tk):
         # self._menus = {}  # type: Dict[str, tk.Menu]
         menu_file = tk.Menu(menubar)
         menu_conn = tk.Menu(menubar)
+        menu_remote = tk.Menu(menubar)
 
         menubar.add_cascade(menu=menu_file, label="File", underline=0)
         menubar.add_cascade(menu=menu_conn, label="Connection", underline=1)
+        menubar.add_cascade(menu=menu_remote, label="Remote platform", underline=0)
 
         menu_file.add_command(label="Exit", command=self._exit_app)
 
@@ -154,6 +156,9 @@ class MainWindow(tk.Tk):
         menu_conn.add_command(
             label="SSH Host", command=lambda: self.set_conn_type("SSH host")
         )
+
+        menu_remote.add_command(label="User")
+        menu_remote.add_command(label="Packages")
 
     def _exit_app(self) -> None:
         """Exit from the app"""
