@@ -25,5 +25,13 @@ class Distro:
         self.ssh_conn: Optional[SSHConnection] = None
 
     def set_ssh_conn(self, conn: SSHConnection) -> None:
+        """Set the SSH connection object"""
+
         if conn:
             self.ssh_conn = conn
+
+    def identify(self) -> None:
+        """Identify the Linux distro"""
+
+        if not self.ssh_conn:
+            return
