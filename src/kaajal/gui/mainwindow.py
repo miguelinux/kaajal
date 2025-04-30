@@ -19,6 +19,7 @@ from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
 from kaajal.config import app_config
 from kaajal.connection import SSHConnection
+from kaajal.distro import Distro
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,8 @@ class MainWindow(tk.Tk):
         mainframe.pack(expand=True, fill="both")
 
         self.ssh_conn = SSHConnection()
+        self.distro = Distro()
+        self.distro.set_ssh_conn(self.ssh_conn)
 
     def _create_conn_frame(self, frame: ttk.Frame) -> None:
         """Creation of the Connection frame"""
