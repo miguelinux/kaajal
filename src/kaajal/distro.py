@@ -8,6 +8,9 @@
 """Kaajal Linux distro functions"""
 
 import logging
+from typing import Optional
+
+from kaajal.connection import SSHConnection
 
 logger = logging.getLogger(__name__)
 
@@ -19,3 +22,8 @@ class Distro:
         """Class constructor of Linux distro"""
 
         self.id = None
+        self.ssh_conn: Optional[SSHConnection] = None
+
+    def set_ssh_conn(self, conn: SSHConnection) -> None:
+        if conn:
+            self.ssh_conn = conn
