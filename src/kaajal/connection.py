@@ -175,6 +175,3 @@ class SSHConnection:
             logger.info("SSH connected to: %s", kwargs["hostname"])
 
         return return_message
-
-
-ssh_conn = SSHConnection()

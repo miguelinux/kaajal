@@ -18,7 +18,7 @@ from typing import Optional
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
 from kaajal.config import app_config
-from kaajal.connection import ssh_conn
+from kaajal.connection import SSHConnection
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +69,8 @@ class MainWindow(tk.Tk):
         notebook.add(conn_frame, text="Connection")
         notebook.add(r_user_frame, text="Remote User")
         mainframe.pack(expand=True, fill="both")
+
+        self.ssh_conn = SSHConnection()
 
     def _create_conn_frame(self, frame: ttk.Frame) -> None:
         """Creation of the Connection frame"""
@@ -180,7 +182,7 @@ class MainWindow(tk.Tk):
 
     def _exit_app(self) -> None:
         """Exit from the app"""
-        ssh_conn.close()
+        self.ssh_conn.close()
         self.quit()
 
     def _open_file(self, strVar: tk.StringVar) -> None:
@@ -247,7 +249,7 @@ class MainWindow(tk.Tk):
     def _do_connect(self) -> None:
         """Do SSH conection"""
 
-        error_msg = ssh_conn.connect(self.get_txt_values())
+        error_msg = self.ssh_conn.connect(self.get_txt_values())
 
         if error_msg:
             messagebox.showerror("Connection error", error_msg)
