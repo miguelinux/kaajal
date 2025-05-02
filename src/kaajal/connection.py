@@ -10,7 +10,8 @@
 import logging
 import os
 import socket
-from typing import Optional
+from typing import Any
+from typing import Union
 
 import paramiko
 from paramiko.channel import ChannelFile
@@ -32,9 +33,10 @@ class SSHConnection:
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
         self.is_connected = False
         # stdin = 0, stdout = 1, stderr = 2
-        self.std: Optional[tuple[ChannelStdinFile, ChannelFile, ChannelStderrFile]] = (
-            None
-        )
+        self.std: Union[
+            tuple[ChannelStdinFile, ChannelFile, ChannelStderrFile],
+            tuple[(Any, Any, Any)],
+        ] = (0, 1, 2)
 
     def close(self) -> None:
         """Close SSH connection"""

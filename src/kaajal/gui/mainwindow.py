@@ -259,3 +259,5 @@ class MainWindow(tk.Tk):
             return
 
         app_config.set_conn_config(self.get_txt_values())
+
+        self.distro.identify()
