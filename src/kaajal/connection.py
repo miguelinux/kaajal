@@ -10,8 +10,12 @@
 import logging
 import os
 import socket
+from typing import Optional
 
 import paramiko
+from paramiko.channel import ChannelFile
+from paramiko.channel import ChannelStderrFile
+from paramiko.channel import ChannelStdinFile
 from paramiko.config import SSHConfig
 
 logger = logging.getLogger(__name__)
@@ -27,6 +31,10 @@ class SSHConnection:
         self.client = paramiko.SSHClient()
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
         self.is_connected = False
+        # stdin = 0, stdout = 1, stderr = 2
+        self.std: Optional[tuple[ChannelStdinFile, ChannelFile, ChannelStderrFile]] = (
+            None
+        )
 
     def close(self) -> None:
         """Close SSH connection"""
@@ -173,5 +181,29 @@ class SSHConnection:
             self.is_connected = True
         finally:
             logger.info("SSH connected to: %s", kwargs["hostname"])
+
+        return return_message
+
+    def exec(
+        self, command, bufsize=-1, timeout=None, get_pty=False, environment=None
+    ) -> str:
+        """Execute a command on the SSH server"""
+
+        return_message = ""
+
+        if not self.is_connected:
+            return "Not connected to a SSH server"
+
+        if not command:
+            return "Not command to execute given"
+
+        try:
+            self.std = self.client.exec_command(
+                command, bufsize, timeout, get_pty, environment
+            )  # nosec B601
+
+        except paramiko.SSHException as e:
+            return_message = "SSHException: " + str(e)
+            logger.exception(return_message)
 
         return return_message
