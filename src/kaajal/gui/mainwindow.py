@@ -260,4 +260,8 @@ class MainWindow(tk.Tk):
 
         app_config.set_conn_config(self.get_txt_values())
 
-        self.distro.identify()
+        error_msg = self.distro.identify()
+
+        if error_msg:
+            messagebox.showwarning("Linux identifycation warning", error_msg)
+            return

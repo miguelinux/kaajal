@@ -35,18 +35,22 @@ class Distro:
         if conn:
             self.ssh_conn = conn
 
-    def identify(self) -> None:
+    def identify(self) -> str:
         """Identify the Linux distro"""
 
+        return_message = ""
+
         if not self.ssh_conn:
-            return
+            return "No connection configured"
 
         # Get OS info
         self.ssh_conn.exec("cat /etc/os-release")
 
+        # if command returned non-zero exit status
         if self.ssh_conn.std[1].channel.recv_exit_status():
-            logger.warning(self.ssh_conn.std[2].read().decode("utf-8").strip())
-            return
+            return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
+            logger.warning(return_message)
+            return return_message
 
         output = self.ssh_conn.std[1].read().decode("utf-8").split("\n")
 
@@ -74,10 +78,13 @@ class Distro:
 
         if self.uid != "0":
             self.ssh_conn.exec("sudo -v")
-            output = self.ssh_conn.std[2].read().decode("utf-8").strip()
-            if output.startswith("Sorry"):
-                logger.warning(output)
+            return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
+            if return_message.startswith("Sorry"):
+                logger.warning(return_message)
+                return return_message
             else:
                 self.sudo = "sudo"
 
         logger.info("Linux %s", self.pretty_name)
+
+        return return_message
