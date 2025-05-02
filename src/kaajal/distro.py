@@ -41,7 +41,9 @@ class Distro:
         return_message = ""
 
         if not self.ssh_conn:
-            return "No connection configured"
+            return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
 
         # Get OS info
         self.ssh_conn.exec("cat /etc/os-release")
@@ -86,5 +88,22 @@ class Distro:
                 self.sudo = "sudo"
 
         logger.info("Linux %s", self.pretty_name)
+
+        return return_message
+
+    def update(self) -> str:
+        """Update the Linux distro"""
+
+        return_message = ""
+
+        if not self.ssh_conn:
+            return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
+
+        if not self.uid and not self.sudo:
+            return_message = "User is not allowed to update the system"
+            logger.warning(return_message)
+            return return_message
 
         return return_message
