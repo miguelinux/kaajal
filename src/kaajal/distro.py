@@ -25,6 +25,8 @@ class Distro:
         self.name = ""
         self.pretty_name = ""
         self.package_manager = ""
+        self.uid = ""
+        self.sudo = ""
         self.ssh_conn: Optional[SSHConnection] = None
 
     def set_ssh_conn(self, conn: SSHConnection) -> None:
@@ -39,6 +41,7 @@ class Distro:
         if not self.ssh_conn:
             return
 
+        # Get OS info
         self.ssh_conn.exec("cat /etc/os-release")
 
         if self.ssh_conn.std[1].channel.recv_exit_status():
@@ -64,5 +67,17 @@ class Distro:
             self.package_manager = "dnf"
         elif self.id in ("debian", "ubuntu"):
             self.package_manager = "apt"
+
+        # Get User info
+        self.ssh_conn.exec("id -u")
+        self.uid = self.ssh_conn.std[1].read().decode("utf-8").strip()
+
+        if self.uid != "0":
+            self.ssh_conn.exec("sudo -v")
+            output = self.ssh_conn.std[2].read().decode("utf-8").strip()
+            if output.startswith("Sorry"):
+                logger.warning(output)
+            else:
+                self.sudo = "sudo"
 
         logger.info("Linux %s", self.pretty_name)
