@@ -45,7 +45,7 @@ class Config:
         self.log_config = {
             "level": "WARNING",
             "filename": "",
-            "format": "{asctime:s} {levelname:<8s}:{name:<15s}: {message:s}",
+            "format": "{asctime:s} {levelname:<8s}:{name:<22s}: {message:s}",
             "style": "{",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         }
