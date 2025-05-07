@@ -83,7 +83,6 @@ class Distro:
             return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
             if return_message.startswith("Sorry"):
                 logger.warning(return_message)
-                return return_message
             else:
                 self.sudo = "sudo"
 
