@@ -12,8 +12,7 @@ import logging
 from kaajal.config import app_config
 from kaajal.connection import SSHConnection
 from kaajal.distro import Distro
-
-# from simple_term_menu import TerminalMenu
+from simple_term_menu import TerminalMenu
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +23,32 @@ def close_all(conn: SSHConnection) -> None:
     app_config.save_log_config()
 
 
+def ask_for_parameters() -> None:
+    """Ask for the missing parameters"""
+
+    menu_title = "  Please choose the connection type.\n"
+    menu_items = [
+        "User     (user, password, ip)",
+        "SSH key  (user, ssh key, ip)",
+        "SSH host (ssh config, ssh host)",
+    ]
+
+    menu = TerminalMenu(
+        menu_entries=menu_items,
+        title=menu_title,
+        cycle_cursor=True,
+    )
+
+    option = menu.show()
+    print(option)
+
+
 def cli_main() -> None:
     """Ensure everething is setup well"""
 
     if not app_config.get_conn_type():
-        print("do setup")
+        ask_for_parameters()
+        return
 
     ssh_conn = SSHConnection()
     distro = Distro()
