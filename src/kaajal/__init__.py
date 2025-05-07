@@ -9,9 +9,40 @@
 
 import logging
 
+from kaajal.config import app_config
+from kaajal.connection import SSHConnection
+from kaajal.distro import Distro
+
+# from simple_term_menu import TerminalMenu
+
 logger = logging.getLogger(__name__)
 
 
-def my_setup():
+def close_all(conn: SSHConnection) -> None:
+    conn.close()
+    app_config.save_conn_config()
+    app_config.save_log_config()
+
+
+def cli_main() -> None:
     """Ensure everething is setup well"""
-    pass
+
+    if not app_config.get_conn_type():
+        print("do setup")
+
+    ssh_conn = SSHConnection()
+    distro = Distro()
+    distro.set_ssh_conn(ssh_conn)
+
+    error_msg = ssh_conn.connect(app_config.conn_config)
+
+    if error_msg:
+        close_all(ssh_conn)
+        return
+
+    error_msg = distro.identify()
+
+    if error_msg:
+        return
+
+    close_all(ssh_conn)

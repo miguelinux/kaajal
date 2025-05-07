@@ -12,7 +12,7 @@ import os
 from platform import system
 
 import click
-from kaajal import my_setup
+from kaajal import cli_main
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
 from kaajal.config import app_config
@@ -61,6 +61,6 @@ def kaajal(**kwargs) -> int:
         app_config.gui_config["gui"] = "yes"
         kaajalw(False)
     else:
-        my_setup()
+        cli_main()
 
     return 0
