@@ -5,10 +5,11 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Kaajal common functions"""
+"""Kaajal cli functions"""
 
 import logging
 
+import click
 from kaajal.config import app_config
 from kaajal.connection import SSHConnection
 from kaajal.distro import Distro
@@ -21,6 +22,16 @@ def close_all(conn: SSHConnection) -> None:
     conn.close()
     app_config.save_conn_config()
     app_config.save_log_config()
+
+
+def ask_conn_value(prompt: str, key: str, hidden: bool = False) -> None:
+    """Ask the config value"""
+    value = app_config.conn_config[key]
+    if value:
+        value = click.prompt(prompt, default=value, hide_input=hidden)
+    else:
+        value = click.prompt(prompt, hide_input=hidden)
+    app_config.conn_config[key] = value
 
 
 def ask_for_parameters() -> None:
@@ -40,7 +51,24 @@ def ask_for_parameters() -> None:
     )
 
     option = menu.show()
-    print(option)
+
+    if option == 0:
+        # User
+        ask_conn_value("Username", "user")
+        ask_conn_value("Password", "password", True)
+        ask_conn_value("Host IP", "host")
+        app_config.conn_config["connection_type"] = "User"
+    elif option == 1:
+        # SSH key
+        ask_conn_value("Username", "user")
+        ask_conn_value("Host IP", "host")
+        ask_conn_value("Path to SSH key", "ssh_key")
+        app_config.conn_config["connection_type"] = "SSH key"
+    elif option == 2:
+        # SSH host
+        ask_conn_value("Path to SSH config", "ssh_config")
+        ask_conn_value("Host ID in SSH confg", "ssh_config_host")
+        app_config.conn_config["connection_type"] = "SSH host"
 
 
 def cli_main() -> None:
@@ -48,7 +76,6 @@ def cli_main() -> None:
 
     if not app_config.get_conn_type():
         ask_for_parameters()
-        return
 
     ssh_conn = SSHConnection()
     distro = Distro()
