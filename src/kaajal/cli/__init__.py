@@ -12,9 +12,9 @@ import os
 from platform import system
 
 import click
-from kaajal import cli_main
 from kaajal.__about__ import __appname__
 from kaajal.__about__ import __version__
+from kaajal.cli.main import cli_main
 from kaajal.config import app_config
 
 logger = logging.getLogger(__name__)
