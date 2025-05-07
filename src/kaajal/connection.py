@@ -181,7 +181,6 @@ class SSHConnection:
 
         else:
             self.is_connected = True
-        finally:
             logger.info("SSH connected to %s", kwargs["hostname"])
 
         return return_message
