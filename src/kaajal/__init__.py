@@ -43,6 +43,7 @@ def cli_main() -> None:
     error_msg = distro.identify()
 
     if error_msg and not error_msg.startswith("Sorry"):
+        close_all(ssh_conn)
         return
 
     close_all(ssh_conn)
