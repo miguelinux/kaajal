@@ -100,9 +100,40 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        if not self.uid and not self.sudo:
+        if self.uid != "0" and not self.sudo:
             return_message = "User is not allowed to update the system"
             logger.warning(return_message)
             return return_message
+
+        if self.id in ("centos", "fedora"):
+            logger.info("dnf -y update")
+            return_message = self.ssh_conn.exec(self.sudo + " dnf -y update")
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on dnf -y update")
+
+        elif self.id in ("debian", "ubuntu"):
+            logger.info("apt-get -y update")
+            return_message = self.ssh_conn.exec(self.sudo + " apt-get -y update")
+
+            if return_message:
+                logger.warning(return_message)
+
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on apt-get -y update")
+
+            logger.info("apt-get -y upgrade")
+            return_message = self.ssh_conn.exec(self.sudo + " apt-get -y upgrade")
+
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on apt-get -y upgrade")
+
+        if return_message:
+            logger.warning(return_message)
 
         return return_message
