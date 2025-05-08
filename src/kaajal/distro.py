@@ -108,6 +108,7 @@ class Distro:
         if self.id in ("centos", "fedora"):
             logger.info("dnf -y update")
             return_message = self.ssh_conn.exec(self.sudo + " dnf -y update")
+
             # wait for exit status
             ret = self.ssh_conn.std[1].channel.recv_exit_status()
             if ret:
@@ -132,6 +133,53 @@ class Distro:
             ret = self.ssh_conn.std[1].channel.recv_exit_status()
             if ret:
                 logger.warning("Non zero return on apt-get -y upgrade")
+
+        if return_message:
+            logger.warning(return_message)
+
+        return return_message
+
+    def install(self, *pkgs) -> str:
+        """Install new packages in Linux distro"""
+
+        return_message = ""
+
+        if not self.ssh_conn:
+            return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
+
+        if self.uid != "0" and not self.sudo:
+            return_message = "User is not allowed to update the system"
+            logger.warning(return_message)
+            return return_message
+
+        if len(pkgs) == 0:
+            return_message = "No packages provided to install"
+            logger.warning(return_message)
+            return return_message
+
+        str_pkgs = " ".join(pkgs)
+
+        if self.id in ("centos", "fedora"):
+            logger.info("dnf -y install %s", str_pkgs)
+            return_message = self.ssh_conn.exec(
+                self.sudo + " dnf -y install " + str_pkgs
+            )
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on dnf -y install %s", str_pkgs)
+
+        elif self.id in ("debian", "ubuntu"):
+            logger.info("apt-get -y install")
+            return_message = self.ssh_conn.exec(
+                self.sudo + " apt-get -y install " + str_pkgs
+            )
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on apt-get -y install %s", str_pkgs)
 
         if return_message:
             logger.warning(return_message)
