@@ -93,4 +93,10 @@ def cli_main() -> None:
         close_all(ssh_conn)
         return
 
+    error_msg = distro.update()
+
+    if error_msg:
+        close_all(ssh_conn)
+        return
+
     close_all(ssh_conn)
