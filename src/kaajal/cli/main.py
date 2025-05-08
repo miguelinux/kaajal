@@ -13,7 +13,6 @@ import click
 from kaajal.config import app_config
 from kaajal.connection import SSHConnection
 from kaajal.distro import Distro
-from simple_term_menu import TerminalMenu
 
 logger = logging.getLogger(__name__)
 
@@ -37,34 +36,25 @@ def ask_conn_value(prompt: str, key: str, hidden: bool = False) -> None:
 def ask_for_parameters() -> None:
     """Ask for the missing parameters"""
 
-    menu_title = "  Please choose the connection type.\n"
-    menu_items = [
-        "User     (user, password, ip)",
-        "SSH key  (user, ssh key, ip)",
-        "SSH host (ssh config, ssh host)",
-    ]
+    click.echo("  Please choose the connection type:\n")
+    click.echo("1. User     (user, password, ip)")
+    click.echo("2. SSH key  (user, ssh key, ip)")
+    click.echo("3. SSH host (ssh config, ssh host)")
+    option = click.prompt("Option", default=1, type=int)
 
-    menu = TerminalMenu(
-        menu_entries=menu_items,
-        title=menu_title,
-        cycle_cursor=True,
-    )
-
-    option = menu.show()
-
-    if option == 0:
+    if option == 1:
         # User
         ask_conn_value("Username", "user")
         ask_conn_value("Password", "password", True)
         ask_conn_value("Host IP", "host")
         app_config.conn_config["connection_type"] = "User"
-    elif option == 1:
+    elif option == 2:
         # SSH key
         ask_conn_value("Username", "user")
         ask_conn_value("Host IP", "host")
         ask_conn_value("Path to SSH key", "ssh_key")
         app_config.conn_config["connection_type"] = "SSH key"
-    elif option == 2:
+    elif option == 3:
         # SSH host
         ask_conn_value("Path to SSH config", "ssh_config")
         ask_conn_value("Host ID in SSH confg", "ssh_config_host")

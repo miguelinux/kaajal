@@ -28,7 +28,6 @@ dependencies = [
   "click",
   "paramiko",
   "platformdirs",
-  "simple-term-menu",
 ]
 
 [project.urls]
