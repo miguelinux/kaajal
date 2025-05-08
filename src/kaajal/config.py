@@ -11,9 +11,6 @@ import logging
 import os
 from typing import Optional
 
-import platformdirs
-from kaajal.__about__ import __appauthor__
-from kaajal.__about__ import __appname__
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +46,13 @@ class Config:
             "style": "{",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         }
+
+        self.user_config_dir = ""
+
+    def set_user_config_dir(self, path: str) -> None:
+        """Set user config dir"""
+        self.user_config_dir = path
+        logger.debug("set user config dir to: %s", self.user_config_dir)
 
     def read_config_from(self, path: str, config: dict) -> None:
         """Read configuration from a file located in path variable"""
@@ -107,11 +111,9 @@ class Config:
         3. command line
         """
 
-        ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
-
         # 1. $XDG_CONFIG_HOME:  $HOME/.config/kaajal
-        if os.path.exists(ucd):
-            config_file_path = os.path.join(ucd, CONN_CONFIG_NAME)
+        if os.path.exists(self.user_config_dir):
+            config_file_path = os.path.join(self.user_config_dir, CONN_CONFIG_NAME)
             if os.path.exists(config_file_path):
                 self.read_config_from(config_file_path, self.conn_config)
 
@@ -139,10 +141,8 @@ class Config:
     ) -> None:
         """Setup the way we log the application"""
 
-        ucd = platformdirs.user_config_dir(appname=__appname__, appauthor=__appauthor__)
-
-        if os.path.exists(ucd):
-            config_file_path = os.path.join(ucd, LOG_CONFIG_NAME)
+        if os.path.exists(self.user_config_dir):
+            config_file_path = os.path.join(self.user_config_dir, LOG_CONFIG_NAME)
             if os.path.exists(config_file_path):
                 self.read_config_from(config_file_path, self.log_config)
 
@@ -208,14 +208,13 @@ class Config:
     def save_conn_config(self) -> None:
         """Save the conn_config to the default location"""
 
-        ucd = platformdirs.user_config_dir(
-            appname=__appname__, appauthor=__appauthor__, ensure_exists=True
-        )
-        if not os.path.exists(ucd):
-            logger.warning("%s: Can not create directory.", ucd)
-            return
+        if not os.path.exists(self.user_config_dir):
+            os.makedirs(self.user_config_dir, mode=0o750)
+            if not os.path.exists(self.user_config_dir):
+                logger.warning("%s: Can not create directory.", self.user_config_dir)
+                return
 
-        config_path = os.path.join(ucd, CONN_CONFIG_NAME)
+        config_path = os.path.join(self.user_config_dir, CONN_CONFIG_NAME)
 
         str_content = "# Autosaved connection config\n"
         str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
@@ -236,18 +235,18 @@ class Config:
 
         with open(config_path, mode="w", encoding="utf-8") as conf_file:
             conf_file.write(str_content)
+        logger.debug("Conn config saved at: %s", config_path)
 
     def save_log_config(self) -> None:
         """Save the log_config to the default location"""
 
-        ucd = platformdirs.user_config_dir(
-            appname=__appname__, appauthor=__appauthor__, ensure_exists=True
-        )
-        if not os.path.exists(ucd):
-            logger.warning("%s: Can not create directory.", ucd)
-            return
+        if not os.path.exists(self.user_config_dir):
+            os.makedirs(self.user_config_dir, mode=0o750)
+            if not os.path.exists(self.user_config_dir):
+                logger.warning("%s: Can not create directory.", self.user_config_dir)
+                return
 
-        config_path = os.path.join(ucd, LOG_CONFIG_NAME)
+        config_path = os.path.join(self.user_config_dir, LOG_CONFIG_NAME)
 
         str_content = "# Autosaved logger config\n"
         str_content += "# vi: set filetype=sh shiftwidth=4 tabstop=8 expandtab:\n#\n"
@@ -264,6 +263,7 @@ class Config:
 
         with open(config_path, mode="w", encoding="utf-8") as conf_file:
             conf_file.write(str_content)
+        logger.debug("Conn config saved at: %s", config_path)
 
 
 app_config = Config()

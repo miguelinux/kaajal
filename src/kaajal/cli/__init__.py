@@ -43,6 +43,8 @@ logger = logging.getLogger(__name__)
 def kaajal(**kwargs) -> int:
     """Kaajal: setup a remote platform"""
 
+    app_config.set_user_config_dir(click.get_app_dir(__appname__))
+
     app_config.load_conn_config(**kwargs)
 
     app_config.load_log_config(kwargs["log_level"], kwargs["log_file"])
