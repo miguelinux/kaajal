@@ -40,7 +40,7 @@ class MainWindow(tk.Tk):
 
         self._create_menus()
 
-        mainframe = ttk.Frame(self, padding="3 3 3 3")
+        mainframe = ttk.Frame(self)
 
         notebook = ttk.Notebook(mainframe)
         notebook.pack(expand=True, fill="both")
@@ -69,7 +69,7 @@ class MainWindow(tk.Tk):
 
         notebook.add(conn_frame, text="Connection")
         notebook.add(r_user_frame, text="Remote User")
-        mainframe.pack(expand=True, fill="both")
+        mainframe.pack(padx=7, pady=7)
 
         self.ssh_conn = SSHConnection()
         self.distro = Distro()
