@@ -60,6 +60,9 @@ class MainWindow(tk.Tk):
         self.ssh_config_host = tk.StringVar()
         self.str_status_bar = tk.StringVar()
 
+        # List Remote User String Var
+        self.lrusv: list[tk.StringVar] = []
+
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
 
@@ -151,6 +154,48 @@ class MainWindow(tk.Tk):
 
     def _create_remote_user_frame(self, frame: ttk.Frame) -> None:
         ttk.Label(frame, text="Username:").grid(column=1, row=1, sticky=tk.E)
+        ttk.Label(frame, text="Password:").grid(column=1, row=2, sticky=tk.E)
+        ttk.Label(frame, text="SSH key:").grid(column=1, row=3, sticky=tk.E)
+        ttk.Label(frame, text="GitHub token:").grid(column=1, row=4, sticky=tk.E)
+
+        self.lrusv.append(tk.StringVar())
+        txt_ru_u = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
+        self.lrusv.append(tk.StringVar())
+        txt_ru_p = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
+        self.lrusv.append(tk.StringVar())
+        txt_ru_s = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
+        self.lrusv.append(tk.StringVar())
+        txt_ru_t = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
+
+        txt_ru_u.grid(column=2, row=1, sticky="we")
+        txt_ru_p.grid(column=2, row=2, sticky="we")
+        txt_ru_s.grid(column=2, row=3, sticky="we")
+        txt_ru_t.grid(column=2, row=4, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Search SSH Key",
+            command=lambda: self._open_file(self.lrusv[2]),
+        ).grid(column=3, row=3, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Search GitHub token",
+            command=lambda: self._open_file(self.lrusv[3]),
+        ).grid(column=3, row=4, sticky="we")
+
+        ttk.Button(frame, text="Create remote user").grid(
+            column=1, row=5, columnspan=3, sticky="we"
+        )
+        ttk.Button(frame, text="Copy SSH key to current connected user").grid(
+            column=1, row=6, columnspan=3, sticky="we"
+        )
+        ttk.Button(frame, text="Copy GitHub token to current connected user").grid(
+            column=1, row=7, columnspan=3, sticky="we"
+        )
+
+        for child in frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
     def _create_menus(self) -> None:
         """Create menus for the window"""
