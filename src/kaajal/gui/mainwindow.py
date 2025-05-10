@@ -46,10 +46,8 @@ class MainWindow(tk.Tk):
         notebook.pack(expand=True, fill="both")
 
         conn_frame = ttk.Frame(notebook)
-        # conn_frame.grid(column=0, row=0, sticky="nwes")
-
         r_user_frame = ttk.Frame(notebook)
-        # conn_frame.grid(column=0, row=0, sticky="nwes")
+        pkgs_frame = ttk.Frame(notebook)
 
         self.connection_type = tk.StringVar()
         self.user = tk.StringVar()
@@ -63,15 +61,20 @@ class MainWindow(tk.Tk):
         # List Remote User String Var
         self.lrusv: list[tk.StringVar] = []
 
+        # String Var of Packages
+        self.sv_pkgs = tk.StringVar()
+
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
+        self._create_packages_frame(pkgs_frame)
 
         lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
         lbl_status_bar.configure(relief="sunken", anchor=tk.E)
         lbl_status_bar.pack(fill="x", side="bottom")
 
         notebook.add(conn_frame, text="Connection")
-        notebook.add(r_user_frame, text="Remote User")
+        notebook.add(r_user_frame, text="User")
+        notebook.add(pkgs_frame, text="Packages")
         mainframe.pack(padx=7, pady=7)
 
         self.ssh_conn = SSHConnection()
@@ -193,6 +196,17 @@ class MainWindow(tk.Tk):
         ttk.Button(frame, text="Copy GitHub token to current connected user").grid(
             column=1, row=7, columnspan=3, sticky="we"
         )
+
+        for child in frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
+    def _create_packages_frame(self, frame: ttk.Frame) -> None:
+        ttk.Label(frame, text="Packages:").grid(column=1, row=1, sticky=tk.E)
+
+        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs)
+        txt_p_p.grid(column=2, row=1, sticky="we")
+
+        ttk.Button(frame, text="Install").grid(column=3, row=1, sticky="we")
 
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
