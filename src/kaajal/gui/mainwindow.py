@@ -64,6 +64,9 @@ class MainWindow(tk.Tk):
         # String Var of Packages
         self.sv_pkgs = tk.StringVar()
 
+        # List of packages
+        self.l_pkgs: list[tk.StringVar] = []
+
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
         self._create_packages_frame(pkgs_frame)
@@ -194,19 +197,91 @@ class MainWindow(tk.Tk):
             column=1, row=6, columnspan=3, sticky="we"
         )
         ttk.Button(frame, text="Copy GitHub token to current connected user").grid(
-            column=1, row=7, columnspan=3, sticky="we"
+            row=7, column=1, columnspan=3, sticky="we"
         )
 
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
     def _create_packages_frame(self, frame: ttk.Frame) -> None:
-        ttk.Label(frame, text="Packages:").grid(column=1, row=1, sticky=tk.E)
+        pkg_frame = ttk.LabelFrame(frame, text="Essential packages")
+        pkg_frame.grid(row=1, column=1, columnspan=3, sticky="we")
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame, text="git", variable=self.l_pkgs[-1], onvalue="git", offvalue=""
+        ).grid(row=1, column=1)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="git-lfs",
+            variable=self.l_pkgs[-1],
+            onvalue="git-lfs",
+            offvalue="",
+        ).grid(row=1, column=2)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="tmux",
+            variable=self.l_pkgs[-1],
+            onvalue="tmux",
+            offvalue="",
+        ).grid(row=1, column=3)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="python3",
+            variable=self.l_pkgs[-1],
+            onvalue="python3",
+            offvalue="",
+        ).grid(row=1, column=4)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame, text="vim", variable=self.l_pkgs[-1], onvalue="vim", offvalue=""
+        ).grid(row=2, column=1)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="rsync",
+            variable=self.l_pkgs[-1],
+            onvalue="rsync",
+            offvalue="",
+        ).grid(row=2, column=2)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="curl",
+            variable=self.l_pkgs[-1],
+            onvalue="curl",
+            offvalue="",
+        ).grid(row=2, column=3)
+
+        self.l_pkgs.append(tk.StringVar())
+        ttk.Checkbutton(
+            pkg_frame,
+            text="python3-pip",
+            variable=self.l_pkgs[-1],
+            onvalue="python3-pip",
+            offvalue="",
+        ).grid(row=2, column=4)
+
+        ttk.Label(frame, text="Other packages:").grid(row=2, column=1, sticky=tk.E)
 
         txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs)
-        txt_p_p.grid(column=2, row=1, sticky="we")
+        txt_p_p.grid(row=2, column=2, sticky="we")
 
-        ttk.Button(frame, text="Install").grid(column=3, row=1, sticky="we")
+        ttk.Button(frame, text="Install packages", command=self._install_pkgs).grid(
+            row=2, column=3, sticky="we"
+        )
+
+        for child in pkg_frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
 
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -318,4 +393,23 @@ class MainWindow(tk.Tk):
 
         if error_msg:
             messagebox.showwarning("Linux identifycation warning", error_msg)
+            return
+
+    def _install_pkgs(self) -> None:
+        """Install packages"""
+
+        str_pkg_list = ""
+        for sv in self.l_pkgs:
+            pkg = sv.get()
+            if pkg:
+                str_pkg_list += pkg + " "
+
+        pkg = self.sv_pkgs.get()
+        if pkg:
+            str_pkg_list += pkg + " "
+
+        error_msg = self.distro.install(pkg)
+
+        if error_msg:
+            messagebox.showwarning("Linux install warning", error_msg)
             return
