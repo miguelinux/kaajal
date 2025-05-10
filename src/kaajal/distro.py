@@ -45,6 +45,11 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
+            logger.warning(return_message)
+            return return_message
+
         # Get OS info
         self.ssh_conn.exec("cat /etc/os-release")
 
@@ -100,6 +105,11 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
+            logger.warning(return_message)
+            return return_message
+
         if self.uid != "0" and not self.sudo:
             return_message = "User is not allowed to update the system"
             logger.warning(return_message)
@@ -149,6 +159,11 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
+            logger.warning(return_message)
+            return return_message
+
         if self.uid != "0" and not self.sudo:
             return_message = "User is not allowed to update the system"
             logger.warning(return_message)
@@ -193,6 +208,11 @@ class Distro:
 
         if not self.ssh_conn:
             return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
+
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
             logger.warning(return_message)
             return return_message
 
