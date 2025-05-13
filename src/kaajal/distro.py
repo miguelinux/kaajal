@@ -8,6 +8,7 @@
 """Kaajal Linux distro functions"""
 
 import logging
+import os
 from typing import Optional
 
 from kaajal.connection import SSHConnection
@@ -149,7 +150,7 @@ class Distro:
 
         return return_message
 
-    def install(self, *pkgs) -> str:
+    def install(self, str_pkgs_list: str = "", pkg_list_path: str = "") -> str:
         """Install new packages in Linux distro"""
 
         return_message = ""
@@ -169,32 +170,47 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        if len(pkgs) == 0:
+        if pkg_list_path:
+            if os.path.exists(pkg_list_path):
+                with open(pkg_list_path, encoding="utf-8") as pkg_list_file:
+                    for line in pkg_list_file:
+                        if not line or not line.strip():
+                            continue
+                        if line.strip()[0] == "#":
+                            continue
+
+                        str_pkgs_list += line.strip() + " "
+            else:
+                return_message = pkg_list_path + ": not found"
+                logger.warning(return_message)
+                return return_message
+
+        if not str_pkgs_list:
             return_message = "No packages provided to install"
             logger.warning(return_message)
             return return_message
 
-        str_pkgs = " ".join(pkgs)
-
         if self.id in ("centos", "fedora"):
-            logger.info("dnf -y install %s", str_pkgs)
+            logger.info("dnf -y install %s", str_pkgs_list)
             return_message = self.ssh_conn.exec(
-                self.sudo + " dnf -y install " + str_pkgs
+                self.sudo + " dnf -y install " + str_pkgs_list
             )
             # wait for exit status
             ret = self.ssh_conn.std[1].channel.recv_exit_status()
             if ret:
-                logger.warning("Non zero return on dnf -y install %s", str_pkgs)
+                logger.warning("Non zero return on dnf -y install %s", str_pkgs_list)
 
         elif self.id in ("debian", "ubuntu"):
             logger.info("apt-get -y install")
             return_message = self.ssh_conn.exec(
-                self.sudo + " apt-get -y install " + str_pkgs
+                self.sudo + " apt-get -y install " + str_pkgs_list
             )
             # wait for exit status
             ret = self.ssh_conn.std[1].channel.recv_exit_status()
             if ret:
-                logger.warning("Non zero return on apt-get -y install %s", str_pkgs)
+                logger.warning(
+                    "Non zero return on apt-get -y install %s", str_pkgs_list
+                )
 
         if return_message:
             logger.warning(return_message)

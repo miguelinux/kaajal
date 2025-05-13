@@ -63,6 +63,8 @@ class MainWindow(tk.Tk):
 
         # String Var of Packages
         self.sv_pkgs = tk.StringVar()
+        # Package list file
+        self.sv_pkgs_file = tk.StringVar()
 
         # List of packages
         self.l_pkgs: list[tk.StringVar] = []
@@ -271,13 +273,26 @@ class MainWindow(tk.Tk):
             offvalue="",
         ).grid(row=2, column=4)
 
-        ttk.Label(frame, text="Other packages:").grid(row=2, column=1, sticky=tk.E)
+        ttk.Label(frame, text="Packages's list file:").grid(
+            row=2, column=1, sticky=tk.E
+        )
 
-        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs)
+        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs_file)
         txt_p_p.grid(row=2, column=2, sticky="we")
 
+        ttk.Button(
+            frame,
+            text="Search list",
+            command=lambda: self._open_file(self.sv_pkgs_file),
+        ).grid(row=2, column=3, sticky="we")
+
+        ttk.Label(frame, text="Other packages:").grid(row=3, column=1, sticky=tk.E)
+
+        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs)
+        txt_p_p.grid(row=3, column=2, sticky="we")
+
         ttk.Button(frame, text="Install packages", command=self._install_pkgs).grid(
-            row=2, column=3, sticky="we"
+            row=4, column=1, sticky="we"
         )
 
         for child in pkg_frame.winfo_children():
@@ -406,7 +421,7 @@ class MainWindow(tk.Tk):
 
         pkg = self.sv_pkgs.get()
         if pkg:
-            str_pkg_list += pkg + " "
+            str_pkg_list += pkg
 
         error_msg = self.distro.install(pkg)
 
