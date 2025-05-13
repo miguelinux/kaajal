@@ -48,6 +48,7 @@ class MainWindow(tk.Tk):
         conn_frame = ttk.Frame(notebook)
         r_user_frame = ttk.Frame(notebook)
         pkgs_frame = ttk.Frame(notebook)
+        repo_frame = ttk.Frame(notebook)
 
         self.connection_type = tk.StringVar()
         self.user = tk.StringVar()
@@ -69,9 +70,16 @@ class MainWindow(tk.Tk):
         # List of packages
         self.l_pkgs: list[tk.StringVar] = []
 
+        # List of repo data
+        self.l_repo: list[tk.StringVar] = []
+
+        # Repo Listbox
+        self.r_lbox: Optional[tk.Listbox] = None
+
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
         self._create_packages_frame(pkgs_frame)
+        self._create_repo_frame(repo_frame)
 
         lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
         lbl_status_bar.configure(relief="sunken", anchor=tk.E)
@@ -80,6 +88,7 @@ class MainWindow(tk.Tk):
         notebook.add(conn_frame, text="Connection")
         notebook.add(r_user_frame, text="User")
         notebook.add(pkgs_frame, text="Packages")
+        notebook.add(repo_frame, text="Repos")
         mainframe.pack(padx=7, pady=7)
 
         self.ssh_conn = SSHConnection()
@@ -301,6 +310,54 @@ class MainWindow(tk.Tk):
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
+    def _create_repo_frame(self, frame: ttk.Frame) -> None:
+        ttk.Label(frame, text="Repo URL:").grid(row=1, column=1, sticky=tk.E)
+        ttk.Label(frame, text="Path to clone:").grid(row=2, column=1, sticky=tk.E)
+        ttk.Label(frame, text="Repo's list file:").grid(row=3, column=1, sticky=tk.E)
+
+        self.l_repo.append(tk.StringVar())
+        txt_r_u = ttk.Entry(frame, width=15, textvariable=self.l_repo[-1])
+        txt_r_u.grid(row=1, column=2, columnspan=2, sticky="we")
+
+        self.l_repo.append(tk.StringVar())
+        txt_r_p = ttk.Entry(frame, width=15, textvariable=self.l_repo[-1])
+        txt_r_p.grid(row=2, column=2, columnspan=2, sticky="we")
+
+        self.l_repo.append(tk.StringVar())
+        txt_r_f = ttk.Entry(frame, width=15, textvariable=self.l_repo[-1])
+        txt_r_f.grid(row=3, column=2, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Search list",
+            command=lambda: self._open_file(self.l_repo[-1]),
+        ).grid(row=3, column=3, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Add to List",
+            command=self._add_to_repo_list,
+        ).grid(row=4, column=3, sticky="we")
+
+        repo_lframe = ttk.LabelFrame(frame, text="List of repos")
+        repo_lframe.grid(row=4, column=1, rowspan=3, columnspan=2, sticky="we")
+
+        sbar = ttk.Scrollbar(repo_lframe, orient="horizontal")
+        self.r_lbox = tk.Listbox(repo_lframe, height=5, xscrollcommand=sbar.set)
+        sbar.config(command=self.r_lbox.xview)
+
+        sbar.pack(side="bottom", fill=tk.X, padx=5, pady=5)
+        self.r_lbox.pack(fill=tk.X, padx=5, pady=5)
+
+        ttk.Button(
+            frame,
+            text="Clone repo",
+            command=self._clone_repo,
+        ).grid(row=5, column=3, sticky="we")
+
+        for child in frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
     def _create_menus(self) -> None:
         """Create menus for the window"""
 
@@ -428,3 +485,18 @@ class MainWindow(tk.Tk):
         if error_msg:
             messagebox.showwarning("Linux install warning", error_msg)
             return
+
+    def _add_to_repo_list(self) -> None:
+        """Add URL and Path to the list"""
+
+        if self.l_repo[0].get():
+            if self.l_repo[1].get():
+                repo_path = self.l_repo[0].get() + " " + self.l_repo[1].get()
+                if self.r_lbox is not None:
+                    self.r_lbox.insert(tk.END, repo_path)
+
+    def _clone_repo(self) -> None:
+        """Clone repositories from list"""
+        if self.r_lbox is not None:
+            items = self.r_lbox.get(0, tk.END)
+            print(items)
