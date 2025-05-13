@@ -49,6 +49,7 @@ class MainWindow(tk.Tk):
         r_user_frame = ttk.Frame(notebook)
         pkgs_frame = ttk.Frame(notebook)
         repo_frame = ttk.Frame(notebook)
+        tb_frame = ttk.Frame(notebook)
 
         self.connection_type = tk.StringVar()
         self.user = tk.StringVar()
@@ -73,6 +74,9 @@ class MainWindow(tk.Tk):
         # List of repo data
         self.l_repo: list[tk.StringVar] = []
 
+        # List of tarball
+        self.l_tb: list[tk.StringVar] = []
+
         # Repo Listbox
         self.r_lbox: Optional[tk.Listbox] = None
 
@@ -80,6 +84,7 @@ class MainWindow(tk.Tk):
         self._create_remote_user_frame(r_user_frame)
         self._create_packages_frame(pkgs_frame)
         self._create_repo_frame(repo_frame)
+        self._create_tarball_frame(tb_frame)
 
         lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
         lbl_status_bar.configure(relief="sunken", anchor=tk.E)
@@ -89,6 +94,7 @@ class MainWindow(tk.Tk):
         notebook.add(r_user_frame, text="User")
         notebook.add(pkgs_frame, text="Packages")
         notebook.add(repo_frame, text="Repos")
+        notebook.add(tb_frame, text="Tarballs")
         mainframe.pack(padx=7, pady=7)
 
         self.ssh_conn = SSHConnection()
@@ -351,9 +357,41 @@ class MainWindow(tk.Tk):
 
         ttk.Button(
             frame,
-            text="Clone repo",
+            text="Clone repos",
             command=self._clone_repo,
         ).grid(row=5, column=3, sticky="we")
+
+        for child in frame.winfo_children():
+            child.grid_configure(padx=5, pady=5)
+
+    def _create_tarball_frame(self, frame: ttk.Frame) -> None:
+        ttk.Label(frame, text="Tarball URL:").grid(row=1, column=1, sticky=tk.E)
+        ttk.Label(frame, text="Path to extract:").grid(row=2, column=1, sticky=tk.E)
+        ttk.Label(frame, text="Tarball list file:").grid(row=3, column=1, sticky=tk.E)
+
+        self.l_tb.append(tk.StringVar())
+        txt_tb_u = ttk.Entry(frame, width=15, textvariable=self.l_tb[-1])
+        txt_tb_u.grid(row=1, column=2, columnspan=2, sticky="we")
+
+        self.l_tb.append(tk.StringVar())
+        txt_tb_p = ttk.Entry(frame, width=15, textvariable=self.l_tb[-1])
+        txt_tb_p.grid(row=2, column=2, columnspan=2, sticky="we")
+
+        self.l_tb.append(tk.StringVar())
+        txt_tb_f = ttk.Entry(frame, width=15, textvariable=self.l_tb[-1])
+        txt_tb_f.grid(row=3, column=2, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Search list",
+            command=lambda: self._open_file(self.l_tb[-1]),
+        ).grid(row=3, column=3, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Install tarball",
+            command=self._install_tarball,
+        ).grid(row=4, column=1, sticky="we")
 
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -500,3 +538,8 @@ class MainWindow(tk.Tk):
         if self.r_lbox is not None:
             items = self.r_lbox.get(0, tk.END)
             print(items)
+
+    def _install_tarball(self) -> None:
+        """Install tarball"""
+
+        print("Install tarball")
