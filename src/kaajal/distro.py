@@ -188,34 +188,29 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        if self.id in ("centos", "fedora"):
-            logger.info("%s -y install %s", str_pkgs_list)
-            return_message = self.ssh_conn.exec(
-                self.sudo + " dnf -y install " + str_pkgs_list
+        logger.info("%s -y install %s", self.pm, str_pkgs_list)
+        return_message = self.ssh_conn.exec(
+            self.sudo + " " + self.pm + " -y install " + str_pkgs_list
+        )
+        # wait for exit status
+        ret = self.ssh_conn.std[1].channel.recv_exit_status()
+        if ret:
+            logger.warning(
+                "Non zero return on %s -y install %s", self.pm, str_pkgs_list
             )
-            # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
-                logger.warning("Non zero return on dnf -y install %s", str_pkgs_list)
-
-        elif self.id in ("debian", "ubuntu"):
-            logger.info("apt-get -y install")
-            return_message = self.ssh_conn.exec(
-                self.sudo + " apt-get -y install " + str_pkgs_list
-            )
-            # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
-                logger.warning(
-                    "Non zero return on apt-get -y install %s", str_pkgs_list
-                )
 
         if return_message:
             logger.warning(return_message)
 
         return return_message
 
-    def create_new_user(self) -> str:
+    def create_new_user(
+        self,
+        user: str = "",
+        password: str = "",
+        ssh_key: str = "",
+        github_token: str = "",
+    ) -> str:  # nosec B107 hardcoded_password_default
         """Create a new user in Linux distro"""
 
         return_message = ""
@@ -234,5 +229,10 @@ class Distro:
             return_message = "User is not allowed to update the system"
             logger.warning(return_message)
             return return_message
+
+        print(user)
+        print(password)
+        print(ssh_key)
+        print(github_token)
 
         return return_message
