@@ -80,6 +80,9 @@ class MainWindow(tk.Tk):
         # Repo Listbox
         self.r_lbox: Optional[tk.Listbox] = None
 
+        # Connection button
+        self.btn_conn: ttk.Button
+
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
         self._create_packages_frame(pkgs_frame)
@@ -151,9 +154,8 @@ class MainWindow(tk.Tk):
         )
         btn_ssh_config.grid(column=3, row=6, sticky="we")
 
-        ttk.Button(frame, text="Connect", command=self._do_connect).grid(
-            column=1, row=9, sticky=tk.W
-        )
+        self.btn_conn = ttk.Button(frame, text="Connect", command=self._do_connect)
+        self.btn_conn.grid(column=1, row=9, sticky=tk.W)
 
         self.widgets_conn_user = (
             txt_user,
@@ -503,7 +505,14 @@ class MainWindow(tk.Tk):
 
         if error_msg:
             messagebox.showwarning("Linux identifycation warning", error_msg)
-            return
+
+        self.btn_conn.config(text="Disconnect", command=self._disconnect)
+
+    def _disconnect(self) -> None:
+        """Disconnect from SSH"""
+
+        self.ssh_conn.close()
+        self.btn_conn.config(text="Connect", command=self._do_connect)
 
     def _install_pkgs(self) -> None:
         """Install packages"""
