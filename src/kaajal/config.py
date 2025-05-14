@@ -49,6 +49,15 @@ class Config:
 
         self.user_config_dir = ""
 
+    def print_conn(self) -> None:
+        logger.debug("user: %s", self.conn_config["user"])
+        logger.debug("password: %s", self.conn_config["password"])
+        logger.debug("host: %s", self.conn_config["host"])
+        logger.debug("ssh_key: %s", self.conn_config["ssh_key"])
+        logger.debug("ssh_config: %s", self.conn_config["ssh_config"])
+        logger.debug("ssh_config_host: %s", self.conn_config["ssh_config_host"])
+        logger.debug("connection_type: %s", self.conn_config["connection_type"])
+
     def set_user_config_dir(self, path: str) -> None:
         """Set user config dir"""
         self.user_config_dir = path

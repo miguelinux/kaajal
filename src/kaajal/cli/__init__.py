@@ -66,6 +66,7 @@ def kaajal(ctx, **kwargs) -> int:
             app_config.gui_config["gui"] = "yes"
             kaajalw(False)
         else:
+            app_config.print_conn()
             cli_main()
 
     return 0
