@@ -89,7 +89,7 @@ def cli_main() -> None:
         close_all(ssh_conn)
         return
 
-    error_msg = distro.install("git", "tmux", "vim")
+    error_msg = distro.install("git tmux vim")
 
     if error_msg:
         close_all(ssh_conn)
