@@ -90,7 +90,7 @@ class MainWindow(tk.Tk):
         self._create_tarball_frame(tb_frame)
 
         lbl_status_bar = ttk.Label(mainframe, textvariable=self.str_status_bar)
-        lbl_status_bar.configure(relief="sunken", anchor=tk.E)
+        lbl_status_bar.configure(relief="sunken", anchor=tk.W)
         lbl_status_bar.pack(fill="x", side="bottom")
 
         notebook.add(conn_frame, text="Connection")
@@ -103,6 +103,7 @@ class MainWindow(tk.Tk):
         self.ssh_conn = SSHConnection()
         self.distro = Distro()
         self.distro.set_ssh_conn(self.ssh_conn)
+        self.str_status_bar.set("Not connected to Linux distro")
 
     def _create_conn_frame(self, frame: ttk.Frame) -> None:
         """Creation of the Connection frame"""
@@ -156,6 +157,10 @@ class MainWindow(tk.Tk):
 
         self.btn_conn = ttk.Button(frame, text="Connect", command=self._do_connect)
         self.btn_conn.grid(column=1, row=9, sticky=tk.W)
+
+        ttk.Button(frame, text="Distro Update", command=self._distro_update).grid(
+            column=2, row=9, sticky=tk.W
+        )
 
         self.widgets_conn_user = (
             txt_user,
@@ -507,12 +512,14 @@ class MainWindow(tk.Tk):
             messagebox.showwarning("Linux identifycation warning", error_msg)
 
         self.btn_conn.config(text="Disconnect", command=self._disconnect)
+        self.str_status_bar.set("Connected to " + self.distro.pretty_name)
 
     def _disconnect(self) -> None:
         """Disconnect from SSH"""
 
         self.ssh_conn.close()
         self.btn_conn.config(text="Connect", command=self._do_connect)
+        self.str_status_bar.set("Not connected to Linux distro")
 
     def _install_pkgs(self) -> None:
         """Install packages"""
@@ -552,6 +559,19 @@ class MainWindow(tk.Tk):
         """Install tarball"""
 
         print("Install tarball")
+
+    def _distro_update(self) -> None:
+        """Update the Linux distro"""
+
+        self.str_status_bar.set("Updating Linux Distro ... please wait")
+        self.update()
+
+        error_msg = self.distro.update()
+        if error_msg:
+            messagebox.showwarning("Distro Update Warning", error_msg)
+            self.str_status_bar.set("Error when updating distro")
+        else:
+            self.str_status_bar.set("Linux Distro updated")
 
     def _create_user(self) -> None:
         """Get info to create a user on remote platform"""
