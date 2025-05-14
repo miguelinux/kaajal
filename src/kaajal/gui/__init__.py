@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 def kaajalw(standalone: bool = True) -> int:
     """Main function to use the GUI"""
 
+    ret = 0
+
     if standalone:
         app_config.load_conn_config()
         app_config.load_log_config()
@@ -34,8 +36,9 @@ def kaajalw(standalone: bool = True) -> int:
     # TODO: Test this on a no GUI environment
     except Exception:
         logger.exception("Internal launch or mainloop error")
+        ret = 1
     else:
         app_config.save_conn_config()
         app_config.save_log_config()
 
-    return 0
+    return ret

@@ -9,6 +9,7 @@
 
 import logging
 import os
+import sys
 from platform import system
 
 import click
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--log-file", help="Filename to save logs")
 @click.pass_context
-def kaajal(ctx, **kwargs) -> int:
+def kaajal(ctx, **kwargs) -> None:
     """Kaajal: setup a remote platform"""
 
     app_config.set_user_config_dir(click.get_app_dir(__appname__))
@@ -64,17 +65,18 @@ def kaajal(ctx, **kwargs) -> int:
             from kaajal.gui import kaajalw
 
             app_config.gui_config["gui"] = "yes"
-            kaajalw(False)
-        else:
-            app_config.print_conn()
-            cli_main()
+            sys.exit(kaajalw(False))
+            return
 
-    return 0
+    app_config.print_conn()
+
+    print("load main")
+    cli_main()
 
 
 @kaajal.command()
 @click.pass_context
-def user(ctx):
+def user(ctx) -> None:
     """User add/manipulation command"""
 
     click.echo("TODO user")
@@ -82,7 +84,7 @@ def user(ctx):
 
 @kaajal.command()
 @click.pass_context
-def package(ctx):
+def package(ctx) -> None:
     """Install packages"""
 
     click.echo("TODO packages")
@@ -90,7 +92,7 @@ def package(ctx):
 
 @kaajal.command()
 @click.pass_context
-def repo(ctx):
+def repo(ctx) -> None:
     """Clone git repositories"""
 
     click.echo("TODO repos")
@@ -98,7 +100,7 @@ def repo(ctx):
 
 @kaajal.command()
 @click.pass_context
-def tarball(ctx):
+def tarball(ctx) -> None:
     """Install tarball"""
 
     click.echo("TODO tarball")
