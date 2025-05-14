@@ -40,7 +40,8 @@ logger = logging.getLogger(__name__)
     help="Log level (notset, debug, info, warning, error, critical)",
 )
 @click.option("--log-file", help="Filename to save logs")
-def kaajal(**kwargs) -> int:
+@click.pass_context
+def kaajal(ctx, **kwargs) -> int:
     """Kaajal: setup a remote platform"""
 
     app_config.set_user_config_dir(click.get_app_dir(__appname__))
@@ -56,13 +57,47 @@ def kaajal(**kwargs) -> int:
     if my_system_os == "Linux":
         display = os.environ.get("DISPLAY", "")
 
-    if kwargs["gui"] and display:
-        # Call gui lib only when we need it
-        from kaajal.gui import kaajalw
+    # if no subcommand provided
+    if ctx.invoked_subcommand is None:
+        if kwargs["gui"] and display:
+            # Call gui lib only when we need it
+            from kaajal.gui import kaajalw
 
-        app_config.gui_config["gui"] = "yes"
-        kaajalw(False)
-    else:
-        cli_main()
+            app_config.gui_config["gui"] = "yes"
+            kaajalw(False)
+        else:
+            cli_main()
 
     return 0
+
+
+@kaajal.command()
+@click.pass_context
+def user(ctx):
+    """User add/manipulation command"""
+
+    click.echo("TODO user")
+
+
+@kaajal.command()
+@click.pass_context
+def package(ctx):
+    """Install packages"""
+
+    click.echo("TODO packages")
+
+
+@kaajal.command()
+@click.pass_context
+def repo(ctx):
+    """Clone git repositories"""
+
+    click.echo("TODO repos")
+
+
+@kaajal.command()
+@click.pass_context
+def tarball(ctx):
+    """Install tarball"""
+
+    click.echo("TODO tarball")
