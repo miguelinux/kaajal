@@ -576,8 +576,12 @@ class MainWindow(tk.Tk):
     def _create_user(self) -> None:
         """Get info to create a user on remote platform"""
 
-        print("create user")
-        error_msg = self.distro.create_new_user()
+        user = self.lrusv[0].get()
+        password = self.lrusv[1].get()
+        ssh_key = self.lrusv[2].get()
+        github_token = self.lrusv[3].get()
+
+        error_msg = self.distro.create_new_user(user, password, ssh_key, github_token)
         if error_msg:
             messagebox.showwarning("Linux create new user warning", error_msg)
             return
