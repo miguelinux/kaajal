@@ -209,7 +209,7 @@ class MainWindow(tk.Tk):
             command=lambda: self._open_file(self.lrusv[3]),
         ).grid(column=3, row=4, sticky="we")
 
-        ttk.Button(frame, text="Create remote user").grid(
+        ttk.Button(frame, text="Create remote user", command=self._create_user).grid(
             column=1, row=5, columnspan=3, sticky="we"
         )
         ttk.Button(frame, text="Copy SSH key to current connected user").grid(
@@ -552,3 +552,15 @@ class MainWindow(tk.Tk):
         """Install tarball"""
 
         print("Install tarball")
+
+    def _create_user(self) -> None:
+        """Get info to create a user on remote platform"""
+
+        print("create user")
+        error_msg = self.distro.create_new_user()
+        if error_msg:
+            messagebox.showwarning("Linux create new user warning", error_msg)
+            return
+
+        # self.ssh_conn = SSHConnection()
+        # self.distro = Distro()

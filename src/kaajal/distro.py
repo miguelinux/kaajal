@@ -25,7 +25,8 @@ class Distro:
         self.id = ""
         self.name = ""
         self.pretty_name = ""
-        self.package_manager = ""
+        # package manager
+        self.pm = ""
         self.uid = ""
         self.sudo = ""
         self.ssh_conn: Optional[SSHConnection] = None
@@ -76,9 +77,11 @@ class Distro:
                 self.pretty_name = values[1].replace('"', "")
 
         if self.id in ("centos", "fedora"):
-            self.package_manager = "dnf"
+            # package manager
+            self.pm = "dnf"
         elif self.id in ("debian", "ubuntu"):
-            self.package_manager = "apt"
+            # package manager
+            self.pm = "apt-get"
 
         # Get User info
         self.ssh_conn.exec("id -u")
@@ -88,11 +91,13 @@ class Distro:
             self.ssh_conn.exec("sudo -v")
             return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
             if return_message.startswith("Sorry"):
+                self.sudo = ""
                 logger.warning(return_message)
             else:
                 self.sudo = "sudo"
 
         logger.info("Linux %s", self.pretty_name)
+        logger.debug('sudo = "%s"', self.sudo)
 
         return return_message
 
@@ -116,37 +121,30 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        if self.id in ("centos", "fedora"):
-            logger.info("dnf -y update")
-            return_message = self.ssh_conn.exec(self.sudo + " dnf -y update")
+        logger.info("%s -y update", self.pm)
+        return_message = self.ssh_conn.exec(self.sudo + " " + self.pm + " -y update")
 
-            # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
-                logger.warning("Non zero return on dnf -y update")
-
-        elif self.id in ("debian", "ubuntu"):
-            logger.info("apt-get -y update")
-            return_message = self.ssh_conn.exec(self.sudo + " apt-get -y update")
-
-            if return_message:
-                logger.warning(return_message)
-
-            # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
-                logger.warning("Non zero return on apt-get -y update")
-
-            logger.info("apt-get -y upgrade")
-            return_message = self.ssh_conn.exec(self.sudo + " apt-get -y upgrade")
-
-            # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
-                logger.warning("Non zero return on apt-get -y upgrade")
+        # wait for exit status
+        ret = self.ssh_conn.std[1].channel.recv_exit_status()
+        if ret:
+            logger.warning("Non zero return on %s -y update", self.pm)
 
         if return_message:
             logger.warning(return_message)
+
+        if self.id in ("debian", "ubuntu"):
+            logger.info("%s -y upgrade", self.pm)
+            return_message = self.ssh_conn.exec(
+                self.sudo + " " + self.pm + " -y upgrade"
+            )
+
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                logger.warning("Non zero return on %s -y upgrade", self.pm)
+
+            if return_message:
+                logger.warning(return_message)
 
         return return_message
 
@@ -191,7 +189,7 @@ class Distro:
             return return_message
 
         if self.id in ("centos", "fedora"):
-            logger.info("dnf -y install %s", str_pkgs_list)
+            logger.info("%s -y install %s", str_pkgs_list)
             return_message = self.ssh_conn.exec(
                 self.sudo + " dnf -y install " + str_pkgs_list
             )
