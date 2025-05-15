@@ -282,7 +282,7 @@ class Config:
 
         with open(config_path, mode="w", encoding="utf-8") as conf_file:
             conf_file.write(str_content)
-        logger.debug("Conn config saved at: %s", config_path)
+        logger.debug("Logger config saved at: %s", config_path)
 
 
 app_config = Config()
