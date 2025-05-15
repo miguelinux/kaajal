@@ -90,7 +90,7 @@ class Distro:
         if self.uid != "0":
             self.ssh_conn.exec("sudo -v")
             return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
-            if return_message.startswith("Sorry"):
+            if return_message:
                 self.sudo = ""
                 logger.warning(return_message)
             else:
@@ -120,6 +120,8 @@ class Distro:
             return_message = "User is not allowed to update the system"
             logger.warning(return_message)
             return return_message
+
+        self._setup_proxy(self.pm)
 
         logger.info("%s -y update", self.pm)
         return_message = self.ssh_conn.exec(self.sudo + " " + self.pm + " -y update")
@@ -236,3 +238,40 @@ class Distro:
         print(github_token)
 
         return return_message
+
+    def _setup_proxy(self, target: str = "") -> None:
+        """Set proxy if it is set in environment variables"""
+
+        if not target:
+            return
+
+        if not self.ssh_conn:
+            return
+
+        http_proxy = os.environ.get("http_proxy")
+        if not http_proxy:
+            http_proxy = os.environ.get("HTTP_PROXY")
+
+        https_proxy = os.environ.get("https_proxy")
+        if not https_proxy:
+            https_proxy = os.environ.get("HTTPS_PROXY")
+
+        no_proxy = os.environ.get("no_proxy")
+        if not no_proxy:
+            no_proxy = os.environ.get("NO_PROXY")
+
+        if http_proxy:
+            logger.debug('http_proxy = "%s"', http_proxy)
+        if https_proxy:
+            logger.debug('https_proxy = "%s"', https_proxy)
+        if no_proxy:
+            logger.debug('no_proxy = "%s"', no_proxy)
+
+        if target == "dnf":
+            if http_proxy:
+                self.ssh_conn.exec("grep -q proxy /etc/dnf/dnf.conf")
+                if self.ssh_conn.std[1].channel.recv_exit_status():
+                    cmd = "echo proxy=" + http_proxy
+                    cmd += " | " + self.sudo + " tee -a /etc/dnf/dnf.conf"
+                    self.ssh_conn.exec(cmd)
+                    logger.debug("set http_proxy to dnf.conf")
