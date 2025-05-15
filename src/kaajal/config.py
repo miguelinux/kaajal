@@ -45,6 +45,7 @@ class Config:
             "format": "{asctime:s} {levelname:<8s}:{name:<22s}: {message:s}",
             "style": "{",
             "datefmt": "%Y-%m-%d %H:%M:%S",
+            "filter": "yes",
         }
 
         self.user_config_dir = ""
@@ -168,7 +169,14 @@ class Config:
         if not local_config.get("filename"):
             local_config.pop("filename")
 
+        # Remove filter from local config
+        do_filter = local_config.pop("filter", "no")
+
         logging.basicConfig(**local_config)  # type: ignore[arg-type]
+
+        if "no" != do_filter.lower():
+            filter = logging.Filter("kaajal")
+            logging.root.handlers[0].addFilter(filter)
 
     def get_conn_type(self) -> str:
         """Get the connection type based on current conn_config:
