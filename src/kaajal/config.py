@@ -161,7 +161,7 @@ class Config:
             if isinstance(level_num, int):
                 self.log_config["level"] = logging.getLevelName(level_num)
 
-        if log_file:
+        if log_file is not None:
             self.log_config["filename"] = log_file
 
         local_config = self.log_config.copy()
