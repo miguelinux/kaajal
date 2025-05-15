@@ -88,9 +88,11 @@ class Distro:
         self.uid = self.ssh_conn.std[1].read().decode("utf-8").strip()
 
         if self.uid != "0":
-            self.ssh_conn.exec("sudo -v")
-            return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
-            if return_message:
+            self.ssh_conn.exec("sudo -l | grep -q NOPASSWD")
+            # wait for exit status
+            ret = self.ssh_conn.std[1].channel.recv_exit_status()
+            if ret:
+                return_message = "User can NOT run sudo without password"
                 self.sudo = ""
                 logger.warning(return_message)
             else:
