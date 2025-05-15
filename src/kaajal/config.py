@@ -170,13 +170,13 @@ class Config:
             local_config.pop("filename")
 
         # Remove filter from local config
-        do_filter = local_config.pop("filter", "no")
+        str_do_filter = local_config.pop("filter", "no")
 
         logging.basicConfig(**local_config)  # type: ignore[arg-type]
 
-        if "no" != do_filter.lower():
-            filter = logging.Filter("kaajal")
-            logging.root.handlers[0].addFilter(filter)
+        if "no" != str_do_filter.lower():
+            my_filter = logging.Filter("kaajal")
+            logging.root.handlers[0].addFilter(my_filter)
 
     def get_conn_type(self) -> str:
         """Get the connection type based on current conn_config:
