@@ -11,6 +11,7 @@ import logging
 import os
 import socket
 from typing import Any
+from typing import Optional
 from typing import Union
 
 import paramiko
@@ -30,7 +31,10 @@ class SSHConnection:
 
         self.config = SSHConfig()
         self.client = paramiko.SSHClient()
+
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
+        self.sftp: Optional[paramiko.SFTPClient] = None
+
         self.is_connected = False
         # stdin = 0, stdout = 1, stderr = 2
         self.std: Union[
@@ -182,6 +186,8 @@ class SSHConnection:
 
         else:
             self.is_connected = True
+            self.sftp = self.client.open_sftp()
+
             logger.info("SSH connected to %s", kwargs["hostname"])
 
         return return_message
