@@ -273,7 +273,11 @@ class Distro:
             if http_proxy:
                 self.ssh_conn.exec("grep -q proxy /etc/dnf/dnf.conf")
                 if self.ssh_conn.std[1].channel.recv_exit_status():
+                    # if the word proxy was not found in dnf.conf
                     cmd = "echo proxy=" + http_proxy
                     cmd += " | " + self.sudo + " tee -a /etc/dnf/dnf.conf"
                     self.ssh_conn.exec(cmd)
                     logger.debug("set http_proxy to dnf.conf")
+        elif target == "apt-get":
+            if http_proxy:
+                print("apt-get")
