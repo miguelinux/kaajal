@@ -45,6 +45,8 @@ class SSHConnection:
     def close(self) -> None:
         """Close SSH connection"""
         if self.is_connected:
+            if self.sftp is not None:
+                self.sftp.close()
             self.client.close()
             self.is_connected = False
             logger.info("Closing SSH connection")
