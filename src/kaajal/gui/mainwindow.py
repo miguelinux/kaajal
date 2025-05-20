@@ -8,6 +8,7 @@
 """Main window GUI"""
 
 import logging
+import threading
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -82,6 +83,9 @@ class MainWindow(tk.Tk):
 
         # Connection button
         self.btn_conn: ttk.Button
+
+        # Used to create a thread for longest task
+        self._working_thread: Optional[threading.Thread] = None
 
         self._create_conn_frame(conn_frame)
         self._create_remote_user_frame(r_user_frame)
@@ -560,18 +564,34 @@ class MainWindow(tk.Tk):
 
         print("Install tarball")
 
-    def _distro_update(self) -> None:
-        """Update the Linux distro"""
-
-        self.str_status_bar.set("Updating Linux Distro ... please wait")
-        self.update()
+    def _th_start_distro_update(self) -> None:
+        """Function called by the thread"""
 
         error_msg = self.distro.update()
-        if error_msg:
-            messagebox.showwarning("Distro Update Warning", error_msg)
+        self.after(0, self._th_end_distro_update, error_msg)
+
+    def _th_end_distro_update(self, str_msg: str) -> None:
+        """Function executed at end of thread"""
+
+        if str_msg:
+            messagebox.showwarning("Distro Update Warning", str_msg)
             self.str_status_bar.set("Error when updating distro")
         else:
             self.str_status_bar.set("Linux Distro updated")
+
+        self._working_thread = None
+
+    def _distro_update(self) -> None:
+        """Update the Linux distro"""
+
+        if self._working_thread is None:
+            self.str_status_bar.set("Updating Linux Distro ... please wait")
+            self.update()
+            self._working_thread = threading.Thread(target=self._th_start_distro_update)
+            self._working_thread.start()
+        else:
+            error_msg = "Please wait for the background process finish"
+            messagebox.showwarning("Distro Update Warning", error_msg)
 
     def _create_user(self) -> None:
         """Get info to create a user on remote platform"""
