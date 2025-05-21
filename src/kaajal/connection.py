@@ -217,3 +217,34 @@ class SSHConnection:
             logger.exception(return_message)
 
         return return_message
+
+    def stat(self, path: str, show_except: bool = False) -> int:
+        """Check if a file exists
+
+        Returns:
+         0 if not exists
+         1 if exists
+         2 if exists and has 0 size
+        """
+
+        ret = 0
+
+        if self.sftp is None:
+            return ret
+
+        try:
+            attr = self.sftp.stat(path)
+        except paramiko.sftp.SFTPError as e:
+            if show_except:
+                message = "SFTPError: " + str(e)
+                logger.exception(message)
+        except FileNotFoundError as e:
+            if show_except:
+                message = "FileNotFoundError: " + path + ": " + str(e)
+                logger.exception(message)
+        else:
+            ret = 1
+            if attr.st_size == 0:
+                ret = 2
+
+        return ret
