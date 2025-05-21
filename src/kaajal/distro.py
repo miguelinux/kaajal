@@ -90,8 +90,7 @@ class Distro:
         if self.uid != "0":
             self.ssh_conn.exec("sudo -l | grep -q NOPASSWD")
             # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
+            if self.ssh_conn.std[1].channel.recv_exit_status():
                 return_message = "User can NOT run sudo without password"
                 self.sudo = ""
                 logger.warning(return_message)
@@ -129,8 +128,7 @@ class Distro:
         return_message = self.ssh_conn.exec(self.sudo + " " + self.pm + " -y update")
 
         # wait for exit status
-        ret = self.ssh_conn.std[1].channel.recv_exit_status()
-        if ret:
+        if self.ssh_conn.std[1].channel.recv_exit_status():
             logger.warning("Non zero return on %s -y update", self.pm)
 
         if return_message:
@@ -143,8 +141,7 @@ class Distro:
             )
 
             # wait for exit status
-            ret = self.ssh_conn.std[1].channel.recv_exit_status()
-            if ret:
+            if self.ssh_conn.std[1].channel.recv_exit_status():
                 logger.warning("Non zero return on %s -y upgrade", self.pm)
 
             if return_message:
@@ -197,8 +194,7 @@ class Distro:
             self.sudo + " " + self.pm + " -y install " + str_pkgs_list
         )
         # wait for exit status
-        ret = self.ssh_conn.std[1].channel.recv_exit_status()
-        if ret:
+        if self.ssh_conn.std[1].channel.recv_exit_status():
             logger.warning(
                 "Non zero return on %s -y install %s", self.pm, str_pkgs_list
             )
