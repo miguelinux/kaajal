@@ -277,7 +277,13 @@ class Distro:
                     cmd = "echo proxy=" + http_proxy
                     cmd += " | " + self.sudo + " tee -a /etc/dnf/dnf.conf"
                     self.ssh_conn.exec(cmd)
-                    logger.debug("set http_proxy to dnf.conf")
+                    logger.debug("Set http_proxy to dnf.conf")
         elif target == "apt-get":
             if http_proxy:
-                print("apt-get")
+                file_exist = self.ssh_conn.stat("/etc/apt/apt.conf.d/proxy.conf")
+                if 1 != file_exist:
+                    # if proxy.conf does not exist or has 0 size
+                    cmd = 'echo Acquire::http::Proxy \\"' + http_proxy + '\\"\\; | '
+                    cmd += self.sudo + " tee /etc/apt/apt.conf.d/proxy.conf"
+                    self.ssh_conn.exec(cmd)
+                    logger.debug("Set http_proxy to proxy.conf")
