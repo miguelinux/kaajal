@@ -42,6 +42,8 @@ class SSHConnection:
             tuple[(Any, Any, Any)],
         ] = (0, 1, 2)
 
+        self.username: str = ""
+
     def close(self) -> None:
         """Close SSH connection"""
         if self.is_connected:
@@ -49,6 +51,7 @@ class SSHConnection:
                 self.sftp.close()
             self.client.close()
             self.is_connected = False
+            self.username = ""
             logger.info("Closing SSH connection")
 
     def connect(self, config) -> str:
@@ -154,8 +157,8 @@ class SSHConnection:
 
         return error_message
 
-    def _connect(self, **kwargs) -> str:
-        """SSH Connect using user and password"""
+    def _connect(self, **conn_args) -> str:
+        """SSH Connect using parameters"""
 
         return_message = ""
 
@@ -164,7 +167,7 @@ class SSHConnection:
             return return_message
 
         try:
-            self.client.connect(**kwargs)
+            self.client.connect(**conn_args)
 
         except paramiko.AuthenticationException as e:
             return_message = "AuthenticationException: " + str(e)
@@ -189,8 +192,8 @@ class SSHConnection:
         else:
             self.is_connected = True
             self.sftp = self.client.open_sftp()
-
-            logger.info("SSH connected to %s", kwargs["hostname"])
+            self.username = conn_args["username"]
+            logger.info("SSH connected to %s", conn_args["hostname"])
 
         return return_message
 
