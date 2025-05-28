@@ -43,6 +43,7 @@ class SSHConnection:
         ] = (0, 1, 2)
 
         self.username: str = ""
+        self.home: str = ""
 
     def close(self) -> None:
         """Close SSH connection"""
@@ -52,6 +53,7 @@ class SSHConnection:
             self.client.close()
             self.is_connected = False
             self.username = ""
+            self.home = ""
             logger.info("Closing SSH connection")
 
     def connect(self, config) -> str:
@@ -193,6 +195,8 @@ class SSHConnection:
             self.is_connected = True
             self.sftp = self.client.open_sftp()
             self.username = conn_args["username"]
+            self.exec("echo $HOME")
+            self.home = self.std[1].read().decode("utf-8").strip()
             logger.info("SSH connected to %s", conn_args["hostname"])
 
         return return_message
