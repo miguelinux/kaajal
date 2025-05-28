@@ -604,7 +604,3 @@ class MainWindow(tk.Tk):
         error_msg = self.distro.create_new_user(user, password, ssh_key, github_token)
         if error_msg:
             messagebox.showwarning("Linux create new user warning", error_msg)
-            return
-
-        # self.ssh_conn = SSHConnection()
-        # self.distro = Distro()
