@@ -230,11 +230,246 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        print(user)
-        print(password)
-        print(ssh_key)
-        print(github_token)
+        if not user:
+            return_message = "create_new_user: NO Username given"
+            logger.warning(return_message)
+            return return_message
 
+        if not password and not ssh_key:
+            return_message = "create_new_user: NO password or SSH key given"
+            logger.warning(return_message)
+            return return_message
+
+        if ssh_key and not os.path.exists(ssh_key):
+            return_message = f"create_new_user: {ssh_key} not found"
+            logger.warning(return_message)
+            return return_message
+
+        if github_token and not os.path.exists(github_token):
+            return_message = f"create_new_user: {github_token} not found"
+            logger.warning(return_message)
+            return return_message
+
+        return_message = self.ssh_conn.exec(f"id {user}")
+
+        if return_message:
+            logger.warning(return_message)
+            return return_message
+
+        if 0 == self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = f"create_new_user: {user} already exists"
+            logger.warning(return_message)
+            return return_message
+
+        cmd = self.sudo + "useradd --shell /usr/bin/bash --create-home "
+        cmd += "--home-dir /home/" + user + ' --comment "made by kaajal" '
+        cmd += user
+
+        return_message = self.ssh_conn.exec(cmd)
+
+        if return_message:
+            logger.warning(return_message)
+            return return_message
+
+        # if command returned non-zero exit status
+        if self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
+            logger.warning(return_message)
+            return return_message
+
+        log_info = 'User "' + user + '" created '
+
+        if password:
+            cmd = f'echo "{user}:{password}" | '
+            cmd += self.sudo + " chpasswd"
+
+            return_message = self.ssh_conn.exec(cmd)
+
+            if return_message:
+                logger.warning(return_message)
+                return return_message
+
+            # if command returned non-zero exit status
+            if self.ssh_conn.std[1].channel.recv_exit_status():
+                return_message = self.ssh_conn.std[2].read().decode("utf-8").strip()
+                logger.warning(return_message)
+                return return_message
+
+            log_info += "with password "
+
+        if ssh_key:
+            return_message = self.copy_ssh_key(ssh_key, user)
+            if return_message:
+                return return_message
+            log_info += "and SSH key "
+
+        if github_token:
+            return_message = self.copy_github_token(github_token, user)
+            if return_message:
+                return return_message
+            log_info += "and GitHub Token"
+
+        logger.info(log_info)
+        return return_message
+
+    def copy_ssh_key(self, ssh_key_path: str = "", user: str = "current") -> str:
+        """Copy SSH key to authorized_keys"""
+
+        return_message = ""
+
+        if not self.ssh_conn:
+            return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
+
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
+            logger.warning(return_message)
+            return return_message
+
+        if not ssh_key_path:
+            return_message = "No SSH key given"
+            logger.warning(return_message)
+            return return_message
+
+        if ssh_key_path and not os.path.exists(ssh_key_path):
+            return_message = f"copy_ssh_key: {ssh_key_path} not found"
+            logger.warning(return_message)
+            return return_message
+
+        user_home = ""
+        use_sudo = ""
+
+        if user != "current":
+            if self.uid != "0" and not self.sudo:
+                return_message = "User is not allowed to update the system"
+                logger.warning(return_message)
+                return return_message
+
+            use_sudo = self.sudo
+
+            cmd = "getent passwd " + user + " | cut -d : -f 6"
+            self.ssh_conn.exec(cmd)
+
+            user_home = self.ssh_conn.std[1].read().decode("utf-8").strip()
+
+            if not user_home:
+                return_message = f"copy_ssh_key: User {user} not found in the system"
+                logger.warning(return_message)
+                return return_message
+        else:
+            # if user is "current"
+            user_home = self.ssh_conn.home
+
+        cmd = use_sudo + " mkdir -m 700 -p " + user_home + "/.ssh"
+        self.ssh_conn.exec(cmd)
+
+        if self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = "copy_ssh_key: error at create .ssh directory"
+            logger.warning(return_message)
+            return return_message
+
+        with open(ssh_key_path, encoding="utf-8") as ssh_key_file:
+            ssh_pub_key = ssh_key_file.read().strip()
+
+        cmd = "echo " + ssh_pub_key
+        cmd += " | " + use_sudo + " tee -a "
+        cmd += user_home + "/.ssh/authorized_keys"
+        self.ssh_conn.exec(cmd)
+
+        if self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = "copy_ssh_key: error at add key to authoriezed_keys"
+            logger.warning(return_message)
+            return return_message
+
+        if user != "current":
+            cmd = use_sudo + " chown -R " + user + ":" + user + " "
+            cmd += user_home + "/.ssh"
+
+        logger.info("Copied SSH key to authorized_keys")
+        return return_message
+
+    def copy_github_token(
+        self, github_token_path: str = "", user: str = "current"
+    ) -> str:  # nosec B107 hardcoded_password_default
+        """Copy GitHub Token"""
+
+        return_message = ""
+
+        if not self.ssh_conn:
+            return_message = "No connection configured"
+            logger.warning(return_message)
+            return return_message
+
+        if not self.ssh_conn.is_connected:
+            return_message = "No SSH connection"
+            logger.warning(return_message)
+            return return_message
+
+        if not github_token_path:
+            return_message = "No GitHub Token given"
+            logger.warning(return_message)
+            return return_message
+
+        if github_token_path and not os.path.exists(github_token_path):
+            return_message = f"copy_github_token: {github_token_path} not found"
+            logger.warning(return_message)
+            return return_message
+
+        user_home = ""
+        use_sudo = ""
+
+        if user != "current":
+            if self.uid != "0" and not self.sudo:
+                return_message = "User is not allowed to update the system"
+                logger.warning(return_message)
+                return return_message
+
+            use_sudo = self.sudo
+
+            cmd = "getent passwd " + user + " | cut -d : -f 6"
+            self.ssh_conn.exec(cmd)
+
+            user_home = self.ssh_conn.std[1].read().decode("utf-8").strip()
+
+            if not user_home:
+                return_message = (
+                    f"copy_github_token: User {user} not found in the system"
+                )
+                logger.warning(return_message)
+                return return_message
+        else:
+            # if user is "current"
+            user_home = self.ssh_conn.home
+
+        cmd = use_sudo + " mkdir -m 700 -p " + user_home + "/.config/github"
+        self.ssh_conn.exec(cmd)
+
+        if self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = (
+                "copy_github_token: error at create .config/github directory"
+            )
+            logger.warning(return_message)
+            return return_message
+
+        with open(github_token_path, encoding="utf-8") as github_token_file:
+            str_github_token = github_token_file.read().strip()
+
+        cmd = "echo " + str_github_token
+        cmd += " | " + use_sudo + " tee "
+        cmd += user_home + "/.config/github/token"
+        self.ssh_conn.exec(cmd)
+
+        if self.ssh_conn.std[1].channel.recv_exit_status():
+            return_message = "copy_github_token: error when adding token"
+            logger.warning(return_message)
+            return return_message
+
+        if user != "current":
+            cmd = use_sudo + " chown -R " + user + ":" + user + " "
+            cmd += user_home + "/.config/github"
+
+        logger.info("Copied GitHub Token")
         return return_message
 
     def _setup_proxy(self, target: str = "") -> None:
