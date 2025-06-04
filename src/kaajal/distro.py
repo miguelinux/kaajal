@@ -385,6 +385,7 @@ class Distro:
         if user != "current":
             cmd = use_sudo + " chown -R " + user + ":" + user + " "
             cmd += user_home + "/.ssh"
+            self.ssh_conn.exec(cmd)
 
         logger.info("Copied SSH key to authorized_keys")
         return return_message
@@ -467,7 +468,8 @@ class Distro:
 
         if user != "current":
             cmd = use_sudo + " chown -R " + user + ":" + user + " "
-            cmd += user_home + "/.config/github"
+            cmd += user_home + "/.config"
+            self.ssh_conn.exec(cmd)
 
         logger.info("Copied GitHub Token")
         return return_message
