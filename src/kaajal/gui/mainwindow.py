@@ -192,13 +192,13 @@ class MainWindow(tk.Tk):
         ttk.Label(frame, text="SSH key:").grid(column=1, row=3, sticky=tk.E)
         ttk.Label(frame, text="GitHub token:").grid(column=1, row=4, sticky=tk.E)
 
-        self.lrusv.append(tk.StringVar())
+        self.lrusv.append(tk.StringVar())  # Index 0
         txt_ru_u = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
-        self.lrusv.append(tk.StringVar())
+        self.lrusv.append(tk.StringVar())  # Index 1
         txt_ru_p = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
-        self.lrusv.append(tk.StringVar())
+        self.lrusv.append(tk.StringVar())  # Index 2
         txt_ru_s = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
-        self.lrusv.append(tk.StringVar())
+        self.lrusv.append(tk.StringVar())  # Index 3
         txt_ru_t = ttk.Entry(frame, width=15, textvariable=self.lrusv[-1])
 
         txt_ru_u.grid(column=2, row=1, sticky="we")
@@ -221,12 +221,17 @@ class MainWindow(tk.Tk):
         ttk.Button(frame, text="Create remote user", command=self._create_user).grid(
             column=1, row=5, columnspan=3, sticky="we"
         )
-        ttk.Button(frame, text="Copy SSH key to current connected user").grid(
-            column=1, row=6, columnspan=3, sticky="we"
-        )
-        ttk.Button(frame, text="Copy GitHub token to current connected user").grid(
-            row=7, column=1, columnspan=3, sticky="we"
-        )
+        ttk.Button(
+            frame,
+            text="Copy SSH key to current connected user",
+            command=self._copy_ssh_key,
+        ).grid(column=1, row=6, columnspan=3, sticky="we")
+
+        ttk.Button(
+            frame,
+            text="Copy GitHub token to current connected user",
+            command=self._copy_github_token,
+        ).grid(row=7, column=1, columnspan=3, sticky="we")
 
         for child in frame.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -604,3 +609,21 @@ class MainWindow(tk.Tk):
         error_msg = self.distro.create_new_user(user, password, ssh_key, github_token)
         if error_msg:
             messagebox.showwarning("Linux create new user warning", error_msg)
+
+    def _copy_ssh_key(self) -> None:
+        """Copy SSH Key to the current user"""
+
+        ssh_key = self.lrusv[2].get()
+        error_msg = self.distro.copy_ssh_key(ssh_key)
+
+        if error_msg:
+            messagebox.showwarning("Copy SSH key", error_msg)
+
+    def _copy_github_token(self) -> None:
+        """Copy GitHub Token to the current user"""
+
+        gh_token = self.lrusv[3].get()
+        error_msg = self.distro.copy_ssh_key(gh_token)
+
+        if error_msg:
+            messagebox.showwarning("Copy GitHub Token", error_msg)
