@@ -261,7 +261,7 @@ class Distro:
             logger.warning(return_message)
             return return_message
 
-        cmd = self.sudo + "useradd --shell /usr/bin/bash --create-home "
+        cmd = self.sudo + " useradd --shell /usr/bin/bash --create-home "
         cmd += "--home-dir /home/" + user + ' --comment "made by kaajal" '
         cmd += user
 
