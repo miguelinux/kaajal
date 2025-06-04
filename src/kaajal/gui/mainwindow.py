@@ -8,8 +8,10 @@
 """Main window GUI"""
 
 import logging
+import os
 import threading
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import ttk
@@ -108,6 +110,11 @@ class MainWindow(tk.Tk):
         self.distro = Distro()
         self.distro.set_ssh_conn(self.ssh_conn)
         self.str_status_bar.set("Not connected to Linux distro")
+
+        try:
+            self.home = str(Path.home())
+        except RuntimeError:
+            self.home = ""
 
     def _create_conn_frame(self, frame: ttk.Frame) -> None:
         """Creation of the Connection frame"""
@@ -209,13 +216,13 @@ class MainWindow(tk.Tk):
         ttk.Button(
             frame,
             text="Search SSH Key",
-            command=lambda: self._open_file(self.lrusv[2]),
+            command=lambda: self._open_file(self.lrusv[2], ".ssh"),
         ).grid(column=3, row=3, sticky="we")
 
         ttk.Button(
             frame,
             text="Search GitHub token",
-            command=lambda: self._open_file(self.lrusv[3]),
+            command=lambda: self._open_file(self.lrusv[3], "."),
         ).grid(column=3, row=4, sticky="we")
 
         ttk.Button(frame, text="Create remote user", command=self._create_user).grid(
@@ -443,8 +450,12 @@ class MainWindow(tk.Tk):
         self.ssh_conn.close()
         self.quit()
 
-    def _open_file(self, strVar: tk.StringVar) -> None:
-        str_filename = filedialog.askopenfilename()
+    def _open_file(self, strVar: tk.StringVar, relative_path=None) -> None:
+        path = None
+        if relative_path and self.home:
+            path = os.path.join(self.home, relative_path)
+
+        str_filename = filedialog.askopenfilename(initialdir=path)
         if str_filename:
             strVar.set(str_filename)
 
