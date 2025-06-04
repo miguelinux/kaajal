@@ -11,6 +11,8 @@ import logging
 import os
 from typing import Optional
 
+import yaml
+
 from kaajal.connection import SSHConnection
 
 logger = logging.getLogger(__name__)
@@ -171,14 +173,39 @@ class Distro:
 
         if pkg_list_path:
             if os.path.exists(pkg_list_path):
-                with open(pkg_list_path, encoding="utf-8") as pkg_list_file:
-                    for line in pkg_list_file:
-                        if not line or not line.strip():
-                            continue
-                        if line.strip()[0] == "#":
-                            continue
+                yaml_data = {}
+                try:
+                    with open(pkg_list_path, encoding="utf-8") as pkg_list_file:
+                        if pkg_list_path.endswith(".yaml") or pkg_list_path.endswith(
+                            ".yml"
+                        ):
+                            yaml_data = yaml.safe_load(pkg_list_file)
+                            for distro in yaml_data:
+                                if distro == "any" or distro == self.id:
+                                    for pkg in yaml_data[distro]["packages"]:
+                                        str_pkgs_list += pkg + " "
+                        # TODO: Yum group install is missing
+                        else:
+                            for line in pkg_list_file:
+                                if not line or not line.strip():
+                                    continue
+                                if line.strip()[0] == "#":
+                                    continue
 
-                        str_pkgs_list += line.strip() + " "
+                                str_pkgs_list += line.strip() + " "
+
+                except yaml.YAMLError as e:
+                    return_message = "YAML Error: " + str(e)
+                    logger.exception(return_message)
+                    return return_message
+                except OSError as e:
+                    return_message = "OS Error: " + str(e)
+                    logger.exception(return_message)
+                    return return_message
+                except Exception as e:
+                    return_message = "Error: " + str(e)
+                    logger.exception(return_message)
+                    return return_message
             else:
                 return_message = pkg_list_path + ": not found"
                 logger.warning(return_message)
