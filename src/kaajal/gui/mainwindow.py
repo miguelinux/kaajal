@@ -634,7 +634,7 @@ class MainWindow(tk.Tk):
         """Copy GitHub Token to the current user"""
 
         gh_token = self.lrusv[3].get()
-        error_msg = self.distro.copy_ssh_key(gh_token)
+        error_msg = self.distro.copy_github_token(gh_token)
 
         if error_msg:
             messagebox.showwarning("Copy GitHub Token", error_msg)
