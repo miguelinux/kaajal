@@ -155,14 +155,14 @@ class MainWindow(tk.Tk):
         btn_ssh_key = ttk.Button(
             frame,
             text="Search SSH Key",
-            command=lambda: self._open_file(self.ssh_key),
+            command=lambda: self._open_file(self.ssh_key, ".ssh"),
         )
         btn_ssh_key.grid(column=3, row=5, sticky="we")
 
         btn_ssh_config = ttk.Button(
             frame,
             text="Search SSH config",
-            command=lambda: self._open_file(self.ssh_config),
+            command=lambda: self._open_file(self.ssh_config, ".ssh"),
         )
         btn_ssh_config.grid(column=3, row=6, sticky="we")
 
