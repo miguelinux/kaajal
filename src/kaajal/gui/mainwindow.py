@@ -67,7 +67,7 @@ class MainWindow(tk.Tk):
         self.lrusv: list[tk.StringVar] = []
 
         # String Var of Packages
-        self.sv_pkgs = tk.StringVar()
+        self.sv_other_pkgs = tk.StringVar()
         # Package list file
         self.sv_pkgs_file = tk.StringVar()
 
@@ -326,7 +326,7 @@ class MainWindow(tk.Tk):
 
         ttk.Label(frame, text="Other packages:").grid(row=3, column=1, sticky=tk.E)
 
-        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_pkgs)
+        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_other_pkgs)
         txt_p_p.grid(row=3, column=2, sticky="we")
 
         ttk.Button(frame, text="Install packages", command=self._install_pkgs).grid(
@@ -550,7 +550,7 @@ class MainWindow(tk.Tk):
             if pkg:
                 str_pkg_list += pkg + " "
 
-        pkg = self.sv_pkgs.get()
+        pkg = self.sv_other_pkgs.get()
         if pkg:
             str_pkg_list += pkg
 
