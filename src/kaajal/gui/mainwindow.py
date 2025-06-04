@@ -326,8 +326,8 @@ class MainWindow(tk.Tk):
 
         ttk.Label(frame, text="Other packages:").grid(row=3, column=1, sticky=tk.E)
 
-        txt_p_p = ttk.Entry(frame, width=15, textvariable=self.sv_other_pkgs)
-        txt_p_p.grid(row=3, column=2, sticky="we")
+        txt_p_o = ttk.Entry(frame, width=15, textvariable=self.sv_other_pkgs)
+        txt_p_o.grid(row=3, column=2, sticky="we")
 
         ttk.Button(frame, text="Install packages", command=self._install_pkgs).grid(
             row=4, column=1, sticky="we"
@@ -554,7 +554,7 @@ class MainWindow(tk.Tk):
         if pkg:
             str_pkg_list += pkg
 
-        error_msg = self.distro.install(pkg)
+        error_msg = self.distro.install(str_pkg_list, self.sv_pkgs_file.get())
 
         if error_msg:
             messagebox.showwarning("Linux install warning", error_msg)
